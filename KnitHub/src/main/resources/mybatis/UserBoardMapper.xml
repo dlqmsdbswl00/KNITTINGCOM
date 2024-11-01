@@ -9,7 +9,7 @@
 	<insert id="addUser"
 		parameterType="com.mini.Knit.dtos.UserBoardDTO"
 		useGeneratedKeys="true" keyProperty="userId">
-		INSERT INTO users (username, password, email, name, role, created_at,
+		INSERT INTO UserBoard_TB (username, password, email, name, role, created_at,
 		updated_at)
 		VALUES (#{username}, #{password}, #{email}, #{name}, #{role}, NOW(), NOW())
 	</insert>

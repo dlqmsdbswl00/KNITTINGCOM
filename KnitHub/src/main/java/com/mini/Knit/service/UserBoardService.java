@@ -33,15 +33,15 @@ public class UserBoardService {
     }
     
 	// 회원가입 메소드
-	public boolean registerUser(UserBoardDTO userBoardDTO) {
-	    try {
-	        // 회원가입 로직
-	        return true;
-	    } catch (Exception e) {
-	        logger.error("회원가입 중 오류 발생", e);
-	        return false;
-	    }
-	}
+    public boolean registerUser(UserBoardDTO userBoardDTO) {
+        try {
+            int result = userBoardMapper.addUser(userBoardDTO);
+            return result > 0;
+        } catch (Exception e) {
+            logger.error("회원가입 중 오류 발생", e);
+            return false;
+        }
+    }
 
 
 	// ID 중복 체크 메소드
