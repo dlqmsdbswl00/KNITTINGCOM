@@ -1,15 +1,19 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 
 <head>
 	<meta charset="UTF-8">
 	<title>Insert title here</title>
+	<style type="text/css">
+
+	</style>
 </head>
 
 <body>
-	<header class="header">
-		<nav class="navbar">
+	<header th:fragment="header" class="header">
+		<nav class="navbar navbar-inverse navbar-fixed-top">
 			<ul class="nav navbar-nav">
+				<li><a href="/home">메인화면</a></li>
 				<li><a href="/boardList">게시판</a></li>
 				<li><a href="/schedule">일정관리</a></li>
 				<li th:if="${session.user}">

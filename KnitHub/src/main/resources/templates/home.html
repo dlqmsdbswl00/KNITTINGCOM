@@ -1,22 +1,30 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layouts/layout}">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>뜰래뜰래 - 메인 페이지</title>
-    <link rel="stylesheet" href="css/knitCSS.css"> <!-- 별도 CSS 파일 -->
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>뜰래뜰래 - 메인 페이지</title>
+	<script type="text/javascript">
+
+	</script>
+	<style type="text/css">
+
+	</style>
 </head>
+
 <body>
-    <div th:replace="~{fragments/header}"></div>
+	<div layout:fragment="content">
 
-    <div class="main-container">
-        <!-- 메인 컨텐츠 -->
-        <section class="content">
-            <h1>Welcome to 뜰래뜰래</h1>
-            <p>뜨개질과 함께하는 공간, 뜰래말래에 오신 것을 환영합니다!</p>
-        </section>
-    </div>
-
-    <div th:replace="~{fragments/footer}"></div>
+		<div class="main-container">
+			<!-- 메인 컨텐츠 -->
+			<section class="content">
+				<h1>Welcome to 뜰래뜰래</h1>
+				<p>뜨개질과 함께하는 공간, 뜰래말래에 오신 것을 환영합니다!</p>
+			</section>
+		</div>
+	</div>
 </body>
+
 </html>
