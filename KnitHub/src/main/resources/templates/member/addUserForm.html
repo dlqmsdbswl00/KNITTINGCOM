@@ -5,12 +5,14 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Insert title here</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	
 	<script type="text/javascript">
 		// click(), change().... 
 		// on(), bind().... 이벤트 핸들러 함수
 		$(function () {
 			// on("eventType",funciton(){})
-			$("input[name=username]").on("keyup", function () {
+			$("input[name=id]").on("keyup", function () {
 				var id = $(this).val();// id입력박스에 입력한 id값가져오기 value-> val()
 				// 			console.log(id);
 				$.ajax({
@@ -63,10 +65,9 @@
 				<table class="table">
 					<tr>
 						<th>아이디:</th>
-						<td><input th:field="*{username}" type="text" class="form-control" name="username" />
+						<td><input th:field="*{id}" type="text" class="form-control" name="id" />
 							<span id="idChk" class="n"></span>
-							<span th:if="${#fields.hasErrors('username')}" th:errors="*{username}"
-								class="errorField"></span>
+							<span th:if="${#fields.hasErrors('id')}" th:errors="*{id}" class="errorField"></span>
 						</td>
 					</tr>
 					<tr>
@@ -79,6 +80,14 @@
 						<th>비밀번호:</th>
 						<td><input th:field="*{password}" type="password" class="form-control" name="password" />
 							<span th:if="${#fields.hasErrors('password')}" th:errors="*{password}"
+								class="errorField"></span>
+						</td>
+					</tr>
+					<tr>
+						<th>비밀번호 확인:</th>
+						<td><input th:field="*{passwordConfirm}" type="password" class="form-control"
+								name="passwordConfirm" />
+							<span th:if="${#fields.hasErrors('passwordConfirm')}" th:errors="*{passwordConfirm}"
 								class="errorField"></span>
 						</td>
 					</tr>

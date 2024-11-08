@@ -9,6 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -38,22 +39,28 @@ public class MemberController {
 	}
 
 	@PostMapping(value = "/addUser")
-	public String addUser(@Validated AddUserCommand addUserCommand, BindingResult result, Model model) {
+	public String addUser(@Validated @ModelAttribute AddUserCommand addUserCommand, BindingResult result, Model model) {
 		System.out.println("회원가입하기");
 
+		// 비밀번호가 일치하는지 체크
+		if (!addUserCommand.isPasswordMatch()) {
+			result.rejectValue("passwordConfirm", "error.passwordConfirm", "비밀번호가 일치하지 않습니다.");
+		}
+
 		if (result.hasErrors()) {
-			System.out.println("회원가입 유효값 오류");
+			result.getAllErrors().forEach(error -> System.out.println(error.getDefaultMessage()));
 			return "member/addUserForm";
 		}
 
 		try {
 			memberService.addUser(addUserCommand);
 			System.out.println("회원가입 성공");
-			return "redirect:/";
+			return "redirect:/user/login"; // 회원가입 후 로그인 페이지로 리다이렉트
 		} catch (Exception e) {
 			System.out.println("회원가입실패");
 			e.printStackTrace();
-			return "redirect:addUser";
+			model.addAttribute("errorMessage", "회원가입 처리 중 오류가 발생했습니다.");
+			return "member/addUserForm";
 		}
 
 	}
@@ -87,9 +94,16 @@ public class MemberController {
 			return "member/login";
 		}
 
+		// 로그인 결과를 세션에 설정
 		String path = memberService.login(loginCommand, request, model);
 
-		return path;
+		if (path.equals("redirect:/home")) { // 로그인 성공 시
+			request.getSession().setAttribute("user", loginCommand); // 세션에 사용자 정보 저장
+	        model.addAttribute("user", loginCommand); // 모델에 사용자 정보 추가
+
+		}
+
+		return "/home";
 	}
 
 	@GetMapping(value = "/logout")

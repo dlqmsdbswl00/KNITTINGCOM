@@ -5,7 +5,7 @@
 	
 	<insert id="addUser" parameterType="memberDto">
 		INSERT INTO MEMBER
-		VALUES(NULL,#{id},#{password},#{name},#{email},#{address},#{role})
+		VALUES(NULL,#{id},#{password},#{name},#{email},#{role})
 	</insert>
 	
 	<select id="idChk" parameterType="String" resultType="String">
@@ -13,7 +13,7 @@
 	</select>
 	
 	<select id="loginUser" parameterType="String" resultType="memberDto">
-		SELECT MEMBERID, ID, NAME, PASSWORD, EMAIL, ADDRESS, ROLE
+		SELECT MEMBERID, ID, NAME, PASSWORD, EMAIL, ROLE
 		FROM MEMBER
 		WHERE ID = #{id}
 	</select>

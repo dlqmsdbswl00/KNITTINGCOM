@@ -16,11 +16,11 @@ public class AddUserCommand {
 	@Length(min = 8 , max = 16, message = "8자리이상, 16자이하로 입력하세요")
 	private String password;
 	
+    @NotBlank(message = "비밀번호 확인을 입력하세요")
+    private String passwordConfirm;  // 비밀번호 확인 필드
+    
 	@NotBlank(message = "이메일 입력하세요")
 	private String email;
-	
-	@NotBlank(message = "주소를 입력하세요")
-	private String address;
 
 	public AddUserCommand() {
 		super();
@@ -35,7 +35,6 @@ public class AddUserCommand {
 		this.name = name;
 		this.password = password;
 		this.email = email;
-		this.address = address;
 	}
 
 	public String getId() {
@@ -61,6 +60,14 @@ public class AddUserCommand {
 	public void setPassword(String password) {
 		this.password = password;
 	}
+	
+	public String getPasswordConfirm() {
+		return passwordConfirm;
+	}
+
+	public void setPasswordConfirm(String passwordConfirm) {
+		this.passwordConfirm = passwordConfirm;
+	}
 
 	public String getEmail() {
 		return email;
@@ -70,18 +77,15 @@ public class AddUserCommand {
 		this.email = email;
 	}
 
-	public String getAddress() {
-		return address;
-	}
-
-	public void setAddress(String address) {
-		this.address = address;
-	}
-
+	// 비밀번호와 비밀번호 확인이 일치하는지 확인하는 메서드 추가
+    public boolean isPasswordMatch() {
+        return password != null && password.equals(passwordConfirm);
+    }
+	
 	@Override
 	public String toString() {
 		return "AddUserCommand [id=" + id + ", name=" + name + ", password=" + password + ", email=" + email
-				+ ", address=" + address + "]";
+				+ "]";
 	}
 	
 	

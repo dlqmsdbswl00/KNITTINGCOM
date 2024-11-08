@@ -21,31 +21,7 @@ public class SecurityConfig {
 	
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-		
-//		http.cors().disable().csrf().disable();// 버전업되면서 안씀
-		
-//		http.csrf(AbstractHttpConfigurer::disable)
-//	    .cors(AbstractHttpConfigurer::disable)
-//	    .authorizeHttpRequests(request -> request
-//	    		.dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll()
-//	    		.requestMatchers(new MvcRequestMatcher(introspector, "/")
-//	    					    ,new MvcRequestMatcher(introspector, "/login/**")
-//	    					    ,new MvcRequestMatcher(introspector, "/**/error")).permitAll()
-//	    		.requestMatchers(new MvcRequestMatcher(introspector, "/")
-//					            ,new MvcRequestMatcher(introspector, "/css/**")
-//					            ,new MvcRequestMatcher(introspector, "/js/**")
-//					            ,new MvcRequestMatcher(introspector, "/img/**")
-//					            ).permitAll()
-//	    		.anyRequest().authenticated()
-//	    		)
-//	    .formLogin(login -> login
-//		         .loginPage("/user/login")
-//		         .defaultSuccessUrl("/",true)  // true를 설정해야 이동함. -> 성공하면 무조건 설정한 URL로 감
-//		         .usernameParameter("id")
-//		         .failureUrl("/members/login/error")
-//		         .permitAll()
-//				 )
-		
+
 		// 기능 비활성화
 		http.cors(AbstractHttpConfigurer::disable) 
 		    .csrf(AbstractHttpConfigurer::disable) // cors,csrf 비활성화

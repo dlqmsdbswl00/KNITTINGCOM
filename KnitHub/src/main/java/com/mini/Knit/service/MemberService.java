@@ -33,7 +33,6 @@ public class MemberService {
 		mdto.setPassword(passwordEncoder.encode(addUserCommand.getPassword()));
 		
 		mdto.setEmail(addUserCommand.getEmail());
-		mdto.setAddress(addUserCommand.getAddress());
 		mdto.setRole(RoleStatus.USER+"");//등급추가
 		return memberMapper.addUser(mdto);
 	}
