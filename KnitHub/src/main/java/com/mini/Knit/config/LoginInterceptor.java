@@ -26,8 +26,8 @@ public class LoginInterceptor implements HandlerInterceptor {
 		// 로그인하지 않은 상태에서 로그인, 회원가입 경로를 접근하려 할 때
 		if (session.getAttribute("user") == null) { // 로그인X
 			// 로그인 필요시 로그인 페이지로 리다이렉트
-			if (request.getRequestURI().equals("/user/addUser") || request.getRequestURI().equals("/user/idChk")) {
-				return true; // 회원가입 및 아이디 체크 경로는 예외 처리
+			if (request.getRequestURI().equals("/user/addUser") || request.getRequestURI().equals("/user/idChk") || request.getRequestURI().equals("/") || request.getRequestURI().equals("/home")) {
+				return true; // 홈 페이지 및 회원가입 경로는 예외 처리
 			}
 			System.out.println("로그인 필요");
 			response.sendRedirect("/user/login"); // 로그인 페이지로
