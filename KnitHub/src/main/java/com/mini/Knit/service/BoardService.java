@@ -45,9 +45,6 @@ public class BoardService {
 		boardDto.setTitle(insertBoardCommand.getTitle());
 		boardDto.setContent(insertBoardCommand.getContent());
 
-	    // 새 게시글 추가
-	    boardMapper.insertBoard(boardDto);
-	    
 		// 새글을 추가할때 파라미터로 전달된 boardDto객체에 자동으로,
 		// 증가된 board_seq값이 저장
 		boardMapper.insertBoard(boardDto);// 새글 추가
