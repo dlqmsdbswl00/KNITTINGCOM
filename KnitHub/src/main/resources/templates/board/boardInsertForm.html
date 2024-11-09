@@ -18,11 +18,11 @@
 <h1>새글 작성하기</h1>
 <form action="/board/boardInsert" method="post"
 	  enctype="multipart/form-data" th:object="${insertBoardCommand}">
-	<input type="hidden" name="id" th:value="${session.mdto.id}"/>
+	<input type="hidden" name="id" th:value="${session.user.id}"/>
 	<table class="table">
 		<tr>
 			<th>작성자[ID]</th>
-			<td th:text="${session.mdto.id}"></td>
+			<td th:text="${session.user.id}"></td>
 		</tr>
 		<tr>
 			<th>제목</th>
