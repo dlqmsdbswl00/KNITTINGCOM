@@ -100,10 +100,10 @@ public class MemberController {
 		if (path.equals("redirect:/home")) { // 로그인 성공 시
 			request.getSession().setAttribute("user", loginCommand); // 세션에 사용자 정보 저장
 	        model.addAttribute("user", loginCommand); // 모델에 사용자 정보 추가
+	        return "redirect:/"; // 홈 화면으로 리다이렉트
+	    }
 
-		}
-
-		return "/home";
+	    return "member/login"; // 로그인 실패 시 로그인 페이지로 다시 이동
 	}
 
 	@GetMapping(value = "/logout")

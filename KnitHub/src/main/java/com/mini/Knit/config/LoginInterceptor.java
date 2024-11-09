@@ -18,10 +18,11 @@ public class LoginInterceptor implements HandlerInterceptor {
 		HttpSession session = request.getSession();
 		System.out.println("현재 요청 경로: " + request.getRequestURI());
 
-		
-		
-		
-		
+		// 로그아웃 경로는 예외 처리 (로그인 여부와 관계없이 접근 허용)
+		if (request.getRequestURI().equals("/user/logout")) {
+			return true;
+		}
+
 		// 로그인하지 않은 상태에서 로그인, 회원가입 경로를 접근하려 할 때
 		if (session.getAttribute("mdto") == null) { // 로그인X
 			// 로그인 필요시 로그인 페이지로 리다이렉트
@@ -35,16 +36,5 @@ public class LoginInterceptor implements HandlerInterceptor {
 			return true;
 		}
 	}
-
-//	    
-//		if(session.getAttribute("mdto")==null) {// 로그인X
-//			System.out.println("로그인 필요");
-//			response.sendRedirect("/user/login");//로그인.html로 이동
-//			return false;
-//		}else {
-//			return true;			
-//		}
-//	}
-//	
 
 }

@@ -45,14 +45,14 @@ public class MemberService {
 			           ,HttpServletRequest request
 			           ,Model model) {
 		MemberDto dto = memberMapper.loginUser(loginCommand.getId());
-		String path="home";
+		String path="redirect:/home";
 		if(dto!=null) {
 			//로그인 폼에서 입력받은 패스워드값과 DB에 암호화된 패스워드 비교
 			if(passwordEncoder.matches(loginCommand.getPassword()
 					                  , dto.getPassword())) {
 				System.out.println("패스워드 같음: 회원이 맞음");
 				//session객체에 로그인 정보 저장
-				request.getSession().setAttribute("mdto", dto);
+				request.getSession().setAttribute("user", dto);
 				return path;
 			}else {
 				System.out.println("패스워드 틀림");

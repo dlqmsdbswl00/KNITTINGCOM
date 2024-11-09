@@ -34,7 +34,11 @@
 							<a href="/mypage">마이페이지</a>
 						</li>
 						<li th:if="${session.user}">
-							<span th:text="${session.user.name}"></span>
+							<a href="/user/logout">로그아웃</a>
+						</li>
+						<li th:if="${session.user}">
+						    <span th:text="${session.user.id} + '님'"></span>
+							<!--<span th:text="${session.user.id}"></span>-->
 						</li>
 						<!-- 로그인되지 않은 상태일 때만 표시 -->
 						<li th:if="${session.user == null}">

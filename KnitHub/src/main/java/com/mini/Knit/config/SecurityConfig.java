@@ -12,13 +12,13 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-	
+
 //	authorizeRequests() : 시큐리티 처리에 HttpServletRequest를 사용한다는 것을 의미
 //	requestMatchers("주소") : 지정한 주소에 대해 예외를 두어 설정
 //	permitAll() : 앞에 지정한 주소를 모두에게 접근 허가
 //	anyRequest().authenticated() : 다른 어떤 접근에도 보안 검사를 한다.
 //	formLogin().loginPage("주소") : 로그인 페이지로 주소값으로 이동 설정
-	
+
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
@@ -35,9 +35,4 @@ public class SecurityConfig {
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
-	
 }
-
-
-
-
