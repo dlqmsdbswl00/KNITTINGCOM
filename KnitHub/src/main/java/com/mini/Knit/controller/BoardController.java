@@ -105,7 +105,7 @@ public class BoardController {
 
 	@GetMapping(value = "/download")
 	public void download(int file_seq, HttpServletRequest request, HttpServletResponse response)
-			throws UnsupportedEncodingException {
+			throws UnsupportedEncodingException, IOException {
 
 		FileBoardDto fdto = fileService.getFileInfo(file_seq);// 파일정보가져오기
 
