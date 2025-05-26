@@ -30,22 +30,22 @@ public class PostController {
 
 	@GetMapping
 	public String listPosts(Model model) {
-	    List<Post> posts = postService.getAllPosts();
+		List<Post> posts = postService.getAllPosts();
 
-	    List<Map<String, Object>> postsWithFormattedDate = posts.stream().map(post -> {
-	        Map<String, Object> map = new HashMap<>();
-	        map.put("id", post.getId());
-	        map.put("title", post.getTitle());
-	        map.put("userName", post.getUser().getUserName());
-	        // 날짜를 문자열로 포맷
-	        map.put("formattedCreatedAt", post.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH:mm")));
-	        return map;
-	    }).collect(Collectors.toList());
+		List<Map<String, Object>> postsWithFormattedDate = posts.stream().map(post -> {
+			Map<String, Object> map = new HashMap<>();
+			map.put("id", post.getId());
+			map.put("title", post.getTitle());
+			map.put("userName", post.getUser().getUserName());
+			// 날짜를 문자열로 포맷
+			map.put("formattedCreatedAt",
+					post.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH:mm")));
+			return map;
+		}).collect(Collectors.toList());
 
-	    model.addAttribute("posts", postsWithFormattedDate);
-	    return "post/postlist";
+		model.addAttribute("posts", postsWithFormattedDate);
+		return "post/postlist";
 	}
-
 
 	@GetMapping("/new")
 	public String showPostForm(HttpSession session, Model model) {
@@ -70,25 +70,43 @@ public class PostController {
 	}
 
 	@GetMapping("/{id}")
-	public String viewPost(@PathVariable Integer id, Model model) {
-	    Post post = postService.getPostById(id)
-	                 .orElseThrow(() -> new IllegalArgumentException("게시글 없음"));
+	public String viewPost(@PathVariable Integer id, HttpSession session, Model model) {
+		Post post = postService.getPostById(id).orElseThrow(() -> new IllegalArgumentException("게시글 없음"));
 
-	    model.addAttribute("post", post);
+		User loginUser = (User) session.getAttribute("loginUser");
+		if (loginUser != null) {
+			System.out.println("== 로그인 유저 ID: " + loginUser.getUserId());
+			System.out.println("== 게시글 작성자 ID: " + post.getUser().getUserId());
+		} else {
+			System.out.println("== 로그인 유저 없음");
+		}
 
-	    // LocalDateTime -> String 포맷해서 같이 넣기
-	    String formattedDate = post.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH:mm"));
-	    model.addAttribute("formattedCreatedAt", formattedDate);
+		model.addAttribute("post", post);
+		String formattedDate = post.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH:mm"));
+		model.addAttribute("formattedCreatedAt", formattedDate);
 
-	    return "post/viewpost";
+		return "post/viewpost";
 	}
 
-
 	@GetMapping("/{id}/edit")
-	public String editPostForm(@PathVariable Integer id, Model model) {
+	public String editPostForm(@PathVariable Integer id, HttpSession session, Model model) {
+		User loginUser = (User) session.getAttribute("loginUser");
+		if (loginUser == null) {
+			// 로그인 안 됐으면 원래 요청 URL 저장
+			session.setAttribute("redirectAfterLogin", "/posts/" + id + "/edit");
+			return "redirect:/login";
+		}
+
 		Post post = postService.getPostById(id).orElseThrow(() -> new IllegalArgumentException("게시글 없음"));
+
+		if (!post.getUser().getUserId().equals(loginUser.getUserId())) {
+			// 권한 없으면 알림 띄우는 페이지나 목록으로 돌려보내고, 절대 수정 페이지로 안 넘어가도록
+			// 예) 상세보기 페이지로 돌려보내면서 error 파라미터 줘서 alert 띄우게 함
+			return "redirect:/posts/" + id + "?error=not_authorized";
+		}
+
 		model.addAttribute("post", post);
-		return "post/editpost";
+		return "post/editpost"; // 권한 있으면 수정 페이지로 감
 	}
 
 	// updatePost
@@ -96,6 +114,8 @@ public class PostController {
 	public String updatePost(@PathVariable Integer id, @ModelAttribute Post post, HttpSession session) {
 		User loginUser = (User) session.getAttribute("loginUser");
 		if (loginUser == null) {
+			// 로그인 안 됐으면 원래 요청 URL 저장
+			session.setAttribute("redirectAfterLogin", "/posts/" + id + "/edit");
 			return "redirect:/login";
 		}
 
