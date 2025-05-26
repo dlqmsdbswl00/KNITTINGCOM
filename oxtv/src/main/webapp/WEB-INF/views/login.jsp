@@ -7,6 +7,9 @@
 <title>로그인</title>
 </head>
 <body>
+	<%@ include file="/WEB-INF/views/common/header.jsp"%>
+
+
 	<h2>로그인 페이지</h2>
 	<form action="<c:url value='/login' />" method="post">
 		<input type="hidden" name="redirect" value="${param.redirect}" /> <input

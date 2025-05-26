@@ -7,6 +7,8 @@
 <title>게시글 보기</title>
 </head>
 <body>
+	<%@ include file="/WEB-INF/views/common/header.jsp"%>
+
 	<h2>${post.title}</h2>
 	<p>
 		<strong>작성자:</strong> ${post.user.nickname}
