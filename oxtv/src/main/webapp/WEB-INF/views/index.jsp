@@ -9,16 +9,14 @@
 <body>
 	<h1>뜨개 OXTV 커뮤니티에 오신 것을 환영합니다</h1>
 	<p>여기가 니가 만들 세상의 시작이다.</p>
-	<form action="/signup" method="get">
-		<button type="submit">회원가입</button>
-	</form>
 
 
 	<%
 	Object loginUser = session.getAttribute("loginUser");
 	if (loginUser != null) {
 	%>
-	<%= ((com.oxtv.model.User)loginUser).getUserName() %> 님 환영합니다!
+	<%=((com.oxtv.model.User) loginUser).getNickname()%>
+	님 환영합니다!
 
 	<a href="/logout"><button>로그아웃</button></a>
 	<%
@@ -29,6 +27,13 @@
 	<%
 	}
 	%>
+
+	<hr />
+
+	<!-- 게시판 목록 보기 링크 추가 -->
+	<form action="/posts" method="get">
+		<button type="submit">게시판 가기</button>
+	</form>
 
 </body>
 </html>

@@ -1,0 +1,33 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+
+<html>
+<head>
+<title>게시글 목록</title>
+</head>
+<body>
+	<h2>게시글 목록</h2>
+	<a href="/posts/new">게시글 작성</a>
+	<table border="1">
+		<thead>
+			<tr>
+				<th>ID</th>
+				<th>제목</th>
+				<th>작성자</th>
+				<th>작성일</th>
+			</tr>
+		</thead>
+		<tbody>
+			<c:forEach var="post" items="${posts}">
+				<tr>
+					<td>${post.id}</td>
+					<td><a href="/posts/${post.id}">${post.title}</a></td>
+					<td>${post.user.userName}</td>
+					<td>${post.formattedCreatedAt}</td>
+				</tr>
+			</c:forEach>
+		</tbody>
+	</table>
+</body>
+</html>
