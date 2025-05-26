@@ -10,16 +10,16 @@ import org.springframework.context.annotation.Bean;
 @Configuration
 public class SecurityConfig {
 
-    @Bean
+	@Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf().disable() // CSRF 보호 비활성화 (개발용)
-            .authorizeHttpRequests(auth -> auth.anyRequest().permitAll()) // 모든 요청 허용
-            .formLogin().disable() // 로그인 폼 비활성화
-            .httpBasic().disable(); // 기본 인증 비활성화
-
+        http
+            .csrf().disable()
+            .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
+            .formLogin().disable()
+            .httpBasic().disable();
         return http.build();
     }
-    
+	
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
