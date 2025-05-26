@@ -1,6 +1,7 @@
 package com.oxtv.model;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -23,33 +24,39 @@ import lombok.Setter;
 @Entity
 @Table(name = "posts")
 public class Post {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Integer id;
 
-    private String title;
+	private String title;
 
-    @Column(columnDefinition = "mediumtext")
-    private String content;
+	@Column(columnDefinition = "mediumtext")
+	private String content;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "user_id", nullable = false)
+	private User user;
 
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
+	@Column(name = "created_at", updatable = false)
+	private LocalDateTime createdAt;
 
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+	@Column(name = "updated_at")
+	private LocalDateTime updatedAt;
 
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
-    }
+	@PrePersist
+	protected void onCreate() {
+		this.createdAt = LocalDateTime.now();
+		this.updatedAt = LocalDateTime.now();
+	}
 
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedAt = LocalDateTime.now();
-    }
+	@PreUpdate
+	protected void onUpdate() {
+		this.updatedAt = LocalDateTime.now();
+	}
+
+	public String getFormattedCreatedAt() {
+		if (createdAt == null)
+			return "";
+		return createdAt.format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH:mm"));
+	}
 }

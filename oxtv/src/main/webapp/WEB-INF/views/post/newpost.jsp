@@ -4,6 +4,8 @@
 <title>게시글 작성</title>
 </head>
 <body>
+	<%@ include file="/WEB-INF/views/common/header.jsp"%>
+
 	<h2>게시글 작성</h2>
 	<form method="post" action="/posts/new">
 		제목: <input type="text" name="title" required><br> 내용:<br>

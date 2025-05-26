@@ -30,22 +30,16 @@ public class PostController {
 
 	@GetMapping
 	public String listPosts(Model model) {
-		List<Post> posts = postService.getAllPosts();
+	    List<Post> posts = postService.getAllPosts();
+	    
+	    // Lazy 로딩 대비 → 강제 초기화
+	    posts.forEach(post -> post.getUser().getNickname());
 
-		List<Map<String, Object>> postsWithFormattedDate = posts.stream().map(post -> {
-			Map<String, Object> map = new HashMap<>();
-			map.put("id", post.getId());
-			map.put("title", post.getTitle());
-			map.put("userName", post.getUser().getUserName());
-			// 날짜를 문자열로 포맷
-			map.put("formattedCreatedAt",
-					post.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH:mm")));
-			return map;
-		}).collect(Collectors.toList());
-
-		model.addAttribute("posts", postsWithFormattedDate);
-		return "post/postlist";
+	    model.addAttribute("posts", posts);
+	    return "post/postlist";
 	}
+	
+	
 
 	@GetMapping("/new")
 	public String showPostForm(HttpSession session, Model model) {

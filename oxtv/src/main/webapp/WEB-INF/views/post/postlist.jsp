@@ -7,6 +7,8 @@
 <title>게시글 목록</title>
 </head>
 <body>
+	<%@ include file="/WEB-INF/views/common/header.jsp"%>
+
 	<h2>게시글 목록</h2>
 	<a href="/posts/new">게시글 작성</a>
 	<table border="1">
@@ -23,7 +25,7 @@
 				<tr>
 					<td>${post.id}</td>
 					<td><a href="/posts/${post.id}">${post.title}</a></td>
-					<td>${post.user.userName}</td>
+					<td>${post.user.nickname}</td>
 					<td>${post.formattedCreatedAt}</td>
 				</tr>
 			</c:forEach>
