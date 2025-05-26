@@ -1,0 +1,19 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+
+<html>
+<head><title>게시글 수정</title></head>
+<body>
+<h2>게시글 수정</h2>
+<form method="post" action="/posts/${post.id}/edit">
+    제목: <input type="text" name="title" value="${post.title}" required><br>
+    내용:<br>
+    <textarea name="content" rows="10" cols="50" required>${post.content}</textarea><br>
+    <button type="submit">수정</button>
+</form>
+<form method="post" action="/posts/${post.id}/delete" style="display:inline;">
+    <button type="submit" onclick="return confirm('게시글을 삭제할까요?')">삭제</button>
+</form>
+
+<a href="/posts/${post.id}">취소</a>
+</body>
+</html>
