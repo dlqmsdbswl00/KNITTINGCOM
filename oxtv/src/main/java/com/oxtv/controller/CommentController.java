@@ -1,6 +1,7 @@
 package com.oxtv.controller;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -27,10 +28,12 @@ public class CommentController {
 	}
 
 	@PostMapping("/create")
-	public String createComment(@RequestParam Integer postId, @RequestParam String content, HttpSession session) {
+	@ResponseBody
+	public ResponseEntity<?> createComment(@RequestParam Integer postId, @RequestParam String content,
+			HttpSession session) {
 		User loginUser = (User) session.getAttribute("loginUser");
 		if (loginUser == null)
-			return "redirect:/login";
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 필요");
 
 		Post post = postService.getPostById(postId).orElseThrow(() -> new IllegalArgumentException("게시글 없음"));
 
@@ -47,42 +50,47 @@ public class CommentController {
 		comment.setContent(content);
 
 		commentService.saveComment(comment);
-		return "redirect:/posts/" + postId;
+
+		return ResponseEntity.ok("댓글 작성 성공");
 	}
 
 	@PostMapping("/{id}/edit")
 	@ResponseBody
-	public String editComment(@PathVariable Integer id, @RequestParam String content, HttpSession session) {
-	    User loginUser = (User) session.getAttribute("loginUser");
-	    if (loginUser == null) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+	public ResponseEntity<String> editComment(@PathVariable Integer id, @RequestParam String content,
+			HttpSession session) {
+		User loginUser = (User) session.getAttribute("loginUser");
+		Comment comment = commentService.findById(id);
 
-	    Comment comment = commentService.findById(id); // ← 이게 맞음
+		if (loginUser == null) {
+			Integer postId = comment.getPost().getId();
+			session.setAttribute("redirectAfterLogin", "/posts/" + postId);
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 필요");
+		}
 
-	    if (!comment.getUser().getId().equals(loginUser.getId())) {
-	        throw new ResponseStatusException(HttpStatus.FORBIDDEN);
-	    }
+		if (!comment.getUser().getId().equals(loginUser.getId())) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("권한 없음");
+		}
 
-	    comment.setContent(content);
-	    commentService.saveComment(comment);
-	    return "ok";
+		comment.setContent(content);
+		commentService.saveComment(comment);
+		return ResponseEntity.ok("ok");
 	}
-
 
 	@PostMapping("/{id}/delete")
 	@ResponseBody
 	public String deleteComment(@PathVariable Integer id, HttpSession session) {
-	    User loginUser = (User) session.getAttribute("loginUser");
-	    if (loginUser == null) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+		User loginUser = (User) session.getAttribute("loginUser");
+		if (loginUser == null)
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
 
-	    Comment comment = commentService.findById(id); // ← 여기서 객체 꺼냄
+		Comment comment = commentService.findById(id); // ← 여기서 객체 꺼냄
 
-	    if (!comment.getUser().getId().equals(loginUser.getId())) {
-	        throw new ResponseStatusException(HttpStatus.FORBIDDEN);
-	    }
+		if (!comment.getUser().getId().equals(loginUser.getId())) {
+			throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+		}
 
-	    commentService.deleteComment(id); // ← id로 삭제
-	    return "ok";
+		commentService.deleteComment(id); // ← id로 삭제
+		return "ok";
 	}
-
 
 }

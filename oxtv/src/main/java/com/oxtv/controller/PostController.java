@@ -112,6 +112,11 @@ public class PostController {
 	@GetMapping("/{id}/edit")
 	public String editPostForm(@PathVariable Integer id, HttpSession session, Model model) {
 		User loginUser = (User) session.getAttribute("loginUser");
+		model.addAttribute("loginUser", loginUser);
+
+		boolean isAdmin = loginUser != null && loginUser.getRole() == Role.ADMIN;
+		model.addAttribute("isAdmin", isAdmin);
+
 		if (loginUser == null) {
 			// 로그인 안 됐으면 원래 요청 URL 저장
 			session.setAttribute("redirectAfterLogin", "/posts/" + id + "/edit");
@@ -145,9 +150,12 @@ public class PostController {
 			return "redirect:/posts/" + id + "?error=not_authorized";
 		}
 
-		post.setId(id);
-		post.setUser(existingPost.getUser());
-		postService.updatePost(post);
+		// 댓글 유지하고, 수정할 필드만 바꿔주기
+		existingPost.setTitle(post.getTitle());
+		existingPost.setContent(post.getContent());
+		existingPost.setCategory(post.getCategory());
+
+		postService.updatePost(existingPost);
 		return "redirect:/posts/" + id;
 	}
 

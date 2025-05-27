@@ -6,6 +6,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.oxtv.service.UserService;
 import com.oxtv.model.User;
@@ -13,41 +14,43 @@ import com.oxtv.model.User;
 @Controller
 public class LoginController {
 
-    private final UserService userService;
+	private final UserService userService;
 
-    public LoginController(UserService userService) {
-        this.userService = userService;
-    }
+	public LoginController(UserService userService) {
+		this.userService = userService;
+	}
 
-    @GetMapping("/login")
-    public String loginForm() {
-        return "login";
-    }
+	@GetMapping("/login")
+	public String loginForm() {
+		return "login";
+	}
 
-    @PostMapping("/login")
-    public String login(@RequestParam String userId, @RequestParam String userPassword,
-                        @RequestParam(required = false) String redirect,
-                        HttpSession session, Model model) {
-        User user = userService.authenticate(userId, userPassword);
-        if (user == null) {
-            model.addAttribute("errorMessage", "아이디 또는 비밀번호가 올바르지 않습니다");
-            return "login";
-        }
+	@PostMapping("/login")
+	public String login(@RequestParam String userId, @RequestParam String userPassword,
+			@RequestParam(required = false) String redirect, HttpSession session,
+			RedirectAttributes redirectAttributes) {
 
-        session.setAttribute("loginUser", user);
+		User loginUser = userService.authenticate(userId, userPassword);
+		if (loginUser == null) {
+			redirectAttributes.addAttribute("error", "아이디 또는 비밀번호가 올바르지 않습니다");
+			return "redirect:/login";
+		}
 
-        String redirectUrl = (String) session.getAttribute("redirectAfterLogin");
-        if (redirectUrl != null) {
-            session.removeAttribute("redirectAfterLogin");
-            return "redirect:" + redirectUrl;
-        }
+		session.setAttribute("loginUser", loginUser);
 
-        return "redirect:/";
-    }
+		String redirectURL = (String) session.getAttribute("redirectAfterLogin");
+		session.removeAttribute("redirectAfterLogin");
 
-    @GetMapping("/logout")
-    public String logout(HttpSession session) {
-        session.invalidate();
-        return "redirect:/";
-    }
+		if (redirectURL != null) {
+			return "redirect:" + redirectURL;
+		}
+
+		return "redirect:/"; // 기본 홈으로
+	}
+
+	@GetMapping("/logout")
+	public String logout(HttpSession session) {
+		session.invalidate();
+		return "redirect:/";
+	}
 }

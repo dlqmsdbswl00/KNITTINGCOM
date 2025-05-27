@@ -17,11 +17,17 @@
 	<p>
 		<strong>작성일:</strong> ${formattedCreatedAt}
 	</p>
+	<c:if
+		test="${post.updatedAt != null && post.updatedAt ne post.createdAt}"
+	>
+		<small style="color: gray;">(수정됨)</small>
+	</c:if>
 	<p>${post.content}</p>
 
 	<hr>
 	<c:if
-		test="${not empty sessionScope.loginUser and post.user.userId eq sessionScope.loginUser.userId}">
+		test="${not empty sessionScope.loginUser and post.user.userId eq sessionScope.loginUser.userId}"
+	>
 		<a href="/posts/${post.id}/edit">수정</a>
 	</c:if>
 
@@ -36,9 +42,15 @@
 		<c:forEach var="comment" items="${post.comments}">
 			<div class="comment" data-id="${comment.id}">
 				<strong>${comment.user.nickname}</strong>
+				<c:if
+					test="${comment.updatedAt != null && comment.updatedAt ne comment.createdAt}"
+				>
+					<small style="color: gray;">(수정됨)</small>
+				</c:if>
 				<p class="comment-content">${comment.content}</p>
 				<c:if
-					test="${sessionScope.loginUser != null && sessionScope.loginUser.id == comment.user.id}">
+					test="${sessionScope.loginUser != null && sessionScope.loginUser.id == comment.user.id}"
+				>
 					<button class="edit-btn">수정</button>
 					<button class="delete-btn">삭제</button>
 				</c:if>
@@ -62,9 +74,26 @@
 
 
 	<script>
+		// JSP EL에서 true/false를 문자열로 넣고 JS에서 boolean 변환
+		let isLoggedIn = '${sessionScope.loginUser != null}' === 'true';
+
+		if (!isLoggedIn) {
+			const currentURL = window.location.pathname
+					+ window.location.search;
+			window.location.href = "/login?redirect="
+					+ encodeURIComponent(currentURL);
+			return;
+		}
+
 		// 댓글 등록 버튼
 		$("#commentForm").submit(function(e) {
 			e.preventDefault(); // 폼 기본 전송 막기
+
+			if (!isLoggedIn) {
+				alert("댓글 작성하려면 로그인하세요!");
+				window.location.href = "/login";
+				return;
+			}
 
 			let postId = $("#postId").val();
 			let content = $("#commentContent").val();
@@ -73,9 +102,14 @@
 				postId : postId,
 				content : content
 			}).done(function() {
-				location.reload(); // 성공 시 새로고침
-			}).fail(function() {
-				alert("댓글 작성 실패");
+				location.reload();
+			}).fail(function(xhr) {
+				if (xhr.status === 401) {
+					alert("로그인 후 이용 가능합니다.");
+					window.location.href = "/login";
+				} else {
+					alert("댓글 작성 실패");
+				}
 			});
 		});
 
