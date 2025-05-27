@@ -18,14 +18,16 @@
 		<strong>작성일:</strong> ${formattedCreatedAt}
 	</p>
 	<c:if
-		test="${post.updatedAt != null && post.updatedAt ne post.createdAt}">
+		test="${post.updatedAt != null && post.updatedAt ne post.createdAt}"
+	>
 		<small style="color: gray;">(수정됨)</small>
 	</c:if>
 	<p>${post.content}</p>
 
 	<hr>
 	<c:if
-		test="${not empty sessionScope.loginUser and post.user.userId eq sessionScope.loginUser.userId}">
+		test="${not empty sessionScope.loginUser and post.user.userId eq sessionScope.loginUser.userId}"
+	>
 		<a href="/posts/${post.id}/edit">수정</a>
 	</c:if>
 
@@ -41,12 +43,14 @@
 			<div class="comment" data-id="${comment.id}">
 				<strong>${comment.user.nickname}</strong>
 				<c:if
-					test="${comment.updatedAt != null && comment.updatedAt ne comment.createdAt}">
+					test="${comment.updatedAt != null && comment.updatedAt ne comment.createdAt}"
+				>
 					<small style="color: gray;">(수정됨)</small>
 				</c:if>
 				<p class="comment-content">${comment.content}</p>
 				<c:if
-					test="${sessionScope.loginUser != null && sessionScope.loginUser.id == comment.user.id}">
+					test="${sessionScope.loginUser != null && sessionScope.loginUser.id == comment.user.id}"
+				>
 					<button class="edit-btn">수정</button>
 					<button class="delete-btn">삭제</button>
 				</c:if>
@@ -70,7 +74,18 @@
 
 
 	<script>
-	 let isLoggedIn = ${sessionScope.loginUser != null ? 'true' : 'false'};
+		let isLoggedIn = $
+		{
+			sessionScope.loginUser != null ? 'true' : 'false'
+		};
+
+		if (!isLoggedIn) {
+			const currentURL = window.location.pathname;
+			window.location.href = "/login?redirect="
+					+ encodeURIComponent(currentURL);
+			return;
+		}
+
 		// 댓글 등록 버튼
 		$("#commentForm").submit(function(e) {
 			e.preventDefault(); // 폼 기본 전송 막기
@@ -85,17 +100,17 @@
 			let content = $("#commentContent").val();
 
 			$.post("/comments/create", {
-		        postId: postId,
-		        content: content
-		    }).done(function() {
-		        location.reload();
-		    }).fail(function(xhr) {
-		        if (xhr.status === 401) {
-		            alert("로그인 후 이용 가능합니다.");
-		            window.location.href = "/login";
-		        } else {
-		            alert("댓글 작성 실패");
-		        }
+				postId : postId,
+				content : content
+			}).done(function() {
+				location.reload();
+			}).fail(function(xhr) {
+				if (xhr.status === 401) {
+					alert("로그인 후 이용 가능합니다.");
+					window.location.href = "/login";
+				} else {
+					alert("댓글 작성 실패");
+				}
 			});
 		});
 

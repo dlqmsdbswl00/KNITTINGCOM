@@ -13,7 +13,8 @@
 	<h2>게시글 목록</h2>
 	<form action="/posts" method="get">
 		<input type="text" name="keyword" placeholder="검색어 입력"
-			value="${param.keyword}" />
+			value="${param.keyword}"
+		/>
 		<button type="submit">검색</button>
 	</form>
 
@@ -33,15 +34,20 @@
 					<td>${post.category}</td>
 
 					<!-- 제목 하이라이트 적용 -->
-					<td><a href="/posts/${post.id}"> <c:out
+					<td>
+						<a href="/posts/${post.id}"> <c:out
 								value="${fnx:highlight(post.title, param.keyword)}"
-								escapeXml="false" />
-					</a></td>
+								escapeXml="false"
+							/>
+						</a>
+					</td>
 
 					<!-- 작성자 하이라이트 적용 -->
-					<td><c:out
-							value="${fnx:highlight(post.user.nickname, param.keyword)}"
-							escapeXml="false" /></td>
+					<td>
+						<c:out value="${fnx:highlight(post.user.nickname, param.keyword)}"
+							escapeXml="false"
+						/>
+					</td>
 
 					<!-- 작성일은 하이라이트 필요 없음 -->
 					<td>${post.formattedCreatedAt}</td>

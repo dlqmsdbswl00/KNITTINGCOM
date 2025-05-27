@@ -12,9 +12,9 @@
 
 	<h2>로그인 페이지</h2>
 	<form action="<c:url value='/login' />" method="post">
-		<input type="hidden" name="redirect" value="${param.redirect}" /> <input
-			type="text" name="userId" placeholder="아이디" required /> <input
-			type="password" name="userPassword" placeholder="비밀번호" required />
+		<input type="hidden" name="redirect" value="${param.redirect}" />
+		<input type="text" name="userId" placeholder="아이디" required />
+		<input type="password" name="userPassword" placeholder="비밀번호" required />
 		<button type="submit">로그인</button>
 	</form>
 
