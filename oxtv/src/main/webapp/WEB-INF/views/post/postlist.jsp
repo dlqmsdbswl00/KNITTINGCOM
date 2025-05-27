@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib uri="http://oxtv.com/functions" prefix="fnx"%>
 
 <html>
 <head>
@@ -30,8 +31,19 @@
 			<c:forEach var="post" items="${postsPage.content}">
 				<tr>
 					<td>${post.id}</td>
-					<td><a href="/posts/${post.id}">${post.title}</a></td>
-					<td>${post.user.nickname}</td>
+
+					<!-- 제목 하이라이트 적용 -->
+					<td><a href="/posts/${post.id}"> <c:out
+								value="${fnx:highlight(post.title, param.keyword)}"
+								escapeXml="false" />
+					</a></td>
+
+					<!-- 작성자 하이라이트 적용 -->
+					<td><c:out
+							value="${fnx:highlight(post.user.nickname, param.keyword)}"
+							escapeXml="false" /></td>
+
+					<!-- 작성일은 하이라이트 필요 없음 -->
 					<td>${post.formattedCreatedAt}</td>
 				</tr>
 			</c:forEach>
