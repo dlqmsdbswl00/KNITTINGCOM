@@ -1,6 +1,7 @@
 package com.oxtv.controller;
 
 import com.oxtv.model.Post;
+import com.oxtv.model.Role;
 import com.oxtv.model.User;
 import com.oxtv.service.PostService;
 import com.oxtv.repository.UserRepository;
@@ -63,13 +64,19 @@ public class PostController {
 	}
 
 	@PostMapping("/new")
-	public String createPost(@ModelAttribute Post post, HttpSession session) {
-		User loginUser = (User) session.getAttribute("loginUser");
-		if (loginUser == null) {
-			return "redirect:/login";
+	public String createPost(@RequestParam String title, @RequestParam String content, @RequestParam String category,
+			@SessionAttribute("loginUser") User loginUser) {
+// 관리자 아니면 공지 못 쓰게 방어
+		if (!loginUser.getRole().equals(Role.ADMIN) && category.equals("NOTICE")) {
+			category = "FREE"; // 또는 에러 처리
 		}
 
+		Post post = new Post();
+		post.setTitle(title);
+		post.setContent(content);
+		post.setCategory(category);
 		post.setUser(loginUser);
+
 		postService.createPost(post);
 		return "redirect:/posts";
 	}

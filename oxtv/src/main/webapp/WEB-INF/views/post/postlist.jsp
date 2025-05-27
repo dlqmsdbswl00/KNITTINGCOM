@@ -21,7 +21,7 @@
 	<table border="1">
 		<thead>
 			<tr>
-				<th>ID</th>
+				<th>카테고리</th>
 				<th>제목</th>
 				<th>작성자</th>
 				<th>작성일</th>
@@ -30,7 +30,7 @@
 		<tbody>
 			<c:forEach var="post" items="${postsPage.content}">
 				<tr>
-					<td>${post.id}</td>
+					<td>${post.category}</td>
 
 					<!-- 제목 하이라이트 적용 -->
 					<td><a href="/posts/${post.id}"> <c:out
