@@ -40,6 +40,10 @@ public class Post {
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "user_id", nullable = false)
 	private User user;
+	
+	@Column(nullable = false)
+	private String category;  // 카테고리 추가 (ex: 도안, 자유, 질문, 공지)
+
 
 	@Column(name = "created_at", updatable = false)
 	private LocalDateTime createdAt;
