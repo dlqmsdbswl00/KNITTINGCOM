@@ -10,6 +10,12 @@
 	<%@ include file="/WEB-INF/views/common/header.jsp"%>
 
 	<h2>게시글 목록</h2>
+	<form action="/posts" method="get">
+		<input type="text" name="keyword" placeholder="검색어 입력"
+			value="${param.keyword}" />
+		<button type="submit">검색</button>
+	</form>
+
 	<a href="/posts/new">게시글 작성</a>
 	<table border="1">
 		<thead>
@@ -33,11 +39,12 @@
 	</table>
 
 	<c:if test="${postsPage.hasPrevious()}">
-		<a href="/posts?page=${postsPage.number - 1}">이전</a>
+		<a href="/posts?page=${postsPage.number - 1}&keyword=${param.keyword}">이전</a>
 	</c:if>
 	<c:if test="${postsPage.hasNext()}">
-		<a href="/posts?page=${postsPage.number + 1}">다음</a>
+		<a href="/posts?page=${postsPage.number + 1}&keyword=${param.keyword}">다음</a>
 	</c:if>
+
 
 </body>
 </html>

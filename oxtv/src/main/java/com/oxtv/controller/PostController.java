@@ -33,18 +33,21 @@ public class PostController {
 	}
 
 	@GetMapping
-	public String listPosts(@RequestParam(defaultValue = "0") int page, Model model) {
+	public String listPosts(@RequestParam(value = "keyword", required = false) String keyword,
+			@RequestParam(value = "page", defaultValue = "0") int page, Model model) {
 		int pageSize = 10;
-	    Pageable pageable = PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "id")); 
-	    
-		Page<Post> postsPage = postService.getPostsPage(pageable);
-		
+		Pageable pageable = PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "id"));
+
+		Page<Post> postsPage = (keyword == null || keyword.trim().isEmpty()) ? postService.getPostsPage(pageable)
+				: postService.searchPosts(keyword, pageable);
+
 		postsPage.getContent().forEach(post -> post.getUser().getNickname()); // Lazy 로딩 대비
 
-	    model.addAttribute("posts", postsPage.getContent());
+		model.addAttribute("posts", postsPage.getContent());
 		model.addAttribute("postsPage", postsPage); // Page<Post> 통째로 넘김
 		model.addAttribute("currentPage", page);
 		model.addAttribute("totalPages", postsPage.getTotalPages());
+		model.addAttribute("keyword", keyword);
 
 		return "post/postlist";
 	}
