@@ -25,6 +25,8 @@
 		<br> 제목:
 		<input type="text" name="title" required>
 		<br> 내용:<br>
+
+    
 		<textarea name="content" rows="10" cols="50" required></textarea>
 
 

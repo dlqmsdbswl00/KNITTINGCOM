@@ -12,7 +12,8 @@
 	<p>DEBUG: role name = [${roleName}]</p>
 
 	<form method="post" action="/posts/${post.id}/edit">
-		<br>카테고리:
+
+    <br>카테고리:
 		<select name="category" required>
 			<option value="도안" ${post.category == '도안' ? 'selected' : ''}>도안</option>
 			<option value="자유" ${post.category == '자유' ? 'selected' : ''}>자유</option>
@@ -27,7 +28,9 @@
 		<textarea name="content" rows="10" cols="50" required>${post.content}</textarea>
 
 		<button type="submit">수정</button>
+
 	</form>
+	<button type="submit">수정</button>
 	<form method="post" action="/posts/${post.id}/delete"
 		style="display: inline;"
 	>
