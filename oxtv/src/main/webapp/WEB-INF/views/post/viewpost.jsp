@@ -17,6 +17,8 @@
 		<strong>작성일:</strong> ${formattedCreatedAt}
 	</p>
 	<p>${post.content}</p>
+
+	<hr>
 	<c:if
 		test="${not empty sessionScope.loginUser and post.user.userId eq sessionScope.loginUser.userId}">
 		<a href="/posts/${post.id}/edit">수정</a>
@@ -25,5 +27,18 @@
 
 
 	<a href="/posts">목록</a>
+	<hr>
+	<c:forEach var="comment" items="${post.comments}">
+		<p>
+			<strong>${comment.user.nickname}</strong>: ${comment.content}
+		</p>
+	</c:forEach>
+
+	<form method="post" action="/comments/create">
+		<input type="hidden" name="postId" value="${post.id}" />
+		<textarea name="content"></textarea>
+		<button type="submit">댓글 작성</button>
+	</form>
+
 </body>
 </html>
