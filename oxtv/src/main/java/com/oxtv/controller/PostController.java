@@ -1,6 +1,7 @@
 package com.oxtv.controller;
 
 import com.oxtv.model.Post;
+import com.oxtv.model.Role;
 import com.oxtv.model.User;
 import com.oxtv.service.PostService;
 import com.oxtv.repository.UserRepository;
@@ -33,18 +34,21 @@ public class PostController {
 	}
 
 	@GetMapping
-	public String listPosts(@RequestParam(defaultValue = "0") int page, Model model) {
+	public String listPosts(@RequestParam(value = "keyword", required = false) String keyword,
+			@RequestParam(value = "page", defaultValue = "0") int page, Model model) {
 		int pageSize = 10;
-	    Pageable pageable = PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "id")); 
-	    
-		Page<Post> postsPage = postService.getPostsPage(pageable);
-		
+		Pageable pageable = PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "id"));
+
+		Page<Post> postsPage = (keyword == null || keyword.trim().isEmpty()) ? postService.getPostsPage(pageable)
+				: postService.searchPosts(keyword, pageable);
+
 		postsPage.getContent().forEach(post -> post.getUser().getNickname()); // Lazy 로딩 대비
 
-	    model.addAttribute("posts", postsPage.getContent());
+		model.addAttribute("posts", postsPage.getContent());
 		model.addAttribute("postsPage", postsPage); // Page<Post> 통째로 넘김
 		model.addAttribute("currentPage", page);
 		model.addAttribute("totalPages", postsPage.getTotalPages());
+		model.addAttribute("keyword", keyword);
 
 		return "post/postlist";
 	}
@@ -60,13 +64,19 @@ public class PostController {
 	}
 
 	@PostMapping("/new")
-	public String createPost(@ModelAttribute Post post, HttpSession session) {
-		User loginUser = (User) session.getAttribute("loginUser");
-		if (loginUser == null) {
-			return "redirect:/login";
+	public String createPost(@RequestParam String title, @RequestParam String content, @RequestParam String category,
+			@SessionAttribute("loginUser") User loginUser) {
+// 관리자 아니면 공지 못 쓰게 방어
+		if (!loginUser.getRole().equals(Role.ADMIN) && category.equals("NOTICE")) {
+			category = "FREE"; // 또는 에러 처리
 		}
 
+		Post post = new Post();
+		post.setTitle(title);
+		post.setContent(content);
+		post.setCategory(category);
 		post.setUser(loginUser);
+
 		postService.createPost(post);
 		return "redirect:/posts";
 	}

@@ -27,4 +27,10 @@ public class CommentService {
     public void deleteComment(Integer id) {
         commentRepository.deleteById(id);
     }
+    
+    public Comment findById(Integer id) {
+        return commentRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("댓글 없음"));
+    }
+
 }

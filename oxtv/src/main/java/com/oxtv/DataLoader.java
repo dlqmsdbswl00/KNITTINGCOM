@@ -1,16 +1,19 @@
 package com.oxtv;
 
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import com.oxtv.model.Comment;
 import com.oxtv.model.Post;
+import com.oxtv.model.Role;
 import com.oxtv.model.User;
 import com.oxtv.repository.CommentRepository;
 import com.oxtv.repository.PostRepository;
 import com.oxtv.repository.UserRepository;
 
 import java.util.Optional;
+import java.util.Random;
 
 @Component
 public class DataLoader implements CommandLineRunner {
@@ -18,12 +21,14 @@ public class DataLoader implements CommandLineRunner {
 	private final PostRepository postRepository;
 	private final UserRepository userRepository;
 	private final CommentRepository commentRepository;
+	private final BCryptPasswordEncoder passwordEncoder; 
 
 	public DataLoader(PostRepository postRepository, UserRepository userRepository,
-			CommentRepository commentRepository) {
+			CommentRepository commentRepository, BCryptPasswordEncoder passwordEncoder) {
 		this.postRepository = postRepository;
 		this.userRepository = userRepository;
 		this.commentRepository = commentRepository;
+		this.passwordEncoder = passwordEncoder;
 	}
 
 	@Override
@@ -35,8 +40,9 @@ public class DataLoader implements CommandLineRunner {
 			testUser.setUserId(testUserId);
 			testUser.setUserName("테스트이름");
 			testUser.setNickname("테스트별명");
-			testUser.setUserPassword(testUserId); // 평문 저장 주의! (실서비스는 암호화 필수)
+			testUser.setUserPassword(passwordEncoder.encode(testUserId)); // 암호화
 			testUser.setEmail("testuser@example.com");
+			testUser.setRole(Role.USER);
 			System.out.println("email set: " + testUser.getEmail());
 
 			userRepository.save(testUser);
@@ -59,19 +65,26 @@ public class DataLoader implements CommandLineRunner {
 			commenter.setUserId("commenter");
 			commenter.setUserName("댓글러");
 			commenter.setNickname("댓글왕");
-			commenter.setUserPassword("commenter"); // 평문 주의
+			commenter.setUserPassword(passwordEncoder.encode("commenter")); // 암호화
 			commenter.setEmail("commenter@example.com");
+			commenter.setRole(Role.USER);
 			userRepository.save(commenter);
 		} else {
 			commenter = commenterOpt.get();
 		}
 
 		if (postRepository.countByUser(testUser) == 0) {
-			for (int i = 1; i <= 50; i++) {
+			String[] categories = {"도안", "자유", "질문", "공지"};
+			Random random = new Random();
+			
+			for (int i = 1; i <= 30; i++) {
 				Post post = new Post();
 				post.setTitle("테스트 글 " + i);
 				post.setContent("테스트 내용입니다. 게시물 번호 " + i);
 				post.setUser(testUser);
+				 // 랜덤 카테고리 넣기
+			    post.setCategory(categories[random.nextInt(categories.length)]);
+
 				postRepository.save(post);
 
 				for (int j = 1; j <= 3; j++) {
