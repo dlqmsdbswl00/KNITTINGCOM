@@ -74,13 +74,12 @@
 
 
 	<script>
-		let isLoggedIn = $
-		{
-			sessionScope.loginUser != null ? 'true' : 'false'
-		};
+		// JSP EL에서 true/false를 문자열로 넣고 JS에서 boolean 변환
+		let isLoggedIn = '${sessionScope.loginUser != null}' === 'true';
 
 		if (!isLoggedIn) {
-			const currentURL = window.location.pathname;
+			const currentURL = window.location.pathname
+					+ window.location.search;
 			window.location.href = "/login?redirect="
 					+ encodeURIComponent(currentURL);
 			return;

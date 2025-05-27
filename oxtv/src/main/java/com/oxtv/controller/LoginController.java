@@ -26,11 +26,11 @@ public class LoginController {
 	}
 
 	@PostMapping("/login")
-	public String login(@RequestParam String username, @RequestParam String password,
+	public String login(@RequestParam String userId, @RequestParam String userPassword,
 			@RequestParam(required = false) String redirect, HttpSession session,
 			RedirectAttributes redirectAttributes) {
 
-		User loginUser = userService.authenticate(username, password);
+		User loginUser = userService.authenticate(userId, userPassword);
 		if (loginUser == null) {
 			redirectAttributes.addAttribute("error", "아이디 또는 비밀번호가 올바르지 않습니다");
 			return "redirect:/login";
@@ -38,20 +38,14 @@ public class LoginController {
 
 		session.setAttribute("loginUser", loginUser);
 
-		// 1순위: 쿼리 파라미터
-	    if (redirect != null && !redirect.isBlank()) {
-	        return "redirect:" + redirect;
-	    }
+		String redirectURL = (String) session.getAttribute("redirectAfterLogin");
+		session.removeAttribute("redirectAfterLogin");
 
-	    // 2순위: 세션에 저장된 URL
-	    String redirectURL = (String) session.getAttribute("redirectAfterLogin");
-	    session.removeAttribute("redirectAfterLogin");
+		if (redirectURL != null) {
+			return "redirect:" + redirectURL;
+		}
 
-	    if (redirectURL != null) {
-	        return "redirect:" + redirectURL;
-	    }
-
-	    return "redirect:/"; // 기본 홈으로
+		return "redirect:/"; // 기본 홈으로
 	}
 
 	@GetMapping("/logout")
