@@ -31,14 +31,27 @@
 	<c:forEach var="comment" items="${post.comments}">
 		<p>
 			<strong>${comment.user.nickname}</strong>: ${comment.content}
+			<c:if test="${comment.user.userId == sessionScope.loginUser.userId}">
+				<a href="/comments/${comment.id}/edit">수정</a>
+				<form action="/comments/${comment.id}/delete" method="post"
+					style="display: inline;">
+					<!-- 보안용 CSRF 토큰 (Spring Security 쓸 경우) -->
+					<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
+					<button type="submit">삭제</button>
+				</form>
+			</c:if>
 		</p>
 	</c:forEach>
+
 
 	<form method="post" action="/comments/create">
 		<input type="hidden" name="postId" value="${post.id}" />
 		<textarea name="content"></textarea>
 		<button type="submit">댓글 작성</button>
 	</form>
+
+
 
 </body>
 </html>
