@@ -32,8 +32,16 @@ public class CommentController {
 	public ResponseEntity<?> createComment(@RequestParam Integer postId, @RequestParam String content,
 			HttpSession session) {
 		User loginUser = (User) session.getAttribute("loginUser");
-		if (loginUser == null)
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 필요");
+		
+	    System.out.println("로그인 유저: " + loginUser);  
+
+		
+	    if (loginUser == null) {
+	        System.out.println("로그인 안 됨 → 401 반환");
+	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 필요");
+	    }
+	    System.out.println("로그인 유저 있음 → 댓글 생성 진행");
+
 
 		Post post = postService.getPostById(postId)
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "게시글 없음"));

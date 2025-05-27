@@ -5,6 +5,7 @@ $(document).ready(function() {
 	// 댓글 등록 버튼
 	$("#commentForm").submit(function(e) {
 		e.preventDefault();
+		console.log("댓글 작성 버튼 눌림!");
 
 		let postId = $("#postId").val();
 		let content = $("#commentContent").val();
