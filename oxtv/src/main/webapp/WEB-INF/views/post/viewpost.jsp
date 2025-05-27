@@ -42,11 +42,17 @@
 		<c:forEach var="comment" items="${post.comments}">
 			<div class="comment" data-id="${comment.id}">
 				<strong>${comment.user.nickname}</strong>
+
 				<c:if
 					test="${comment.updatedAt != null && comment.updatedAt ne comment.createdAt}"
 				>
 					<small style="color: gray;">(수정됨)</small>
 				</c:if>
+				<p>
+					작성: ${comment.createdAt} <br> 수정: ${comment.updatedAt} <br>
+					비교: ${comment.updatedAt ne comment.createdAt}
+				</p>
+
 				<p class="comment-content">${comment.content}</p>
 				<c:if
 					test="${sessionScope.loginUser != null && sessionScope.loginUser.id == comment.user.id}"
@@ -75,15 +81,18 @@
 
 	<script>
 		// JSP EL에서 true/false를 문자열로 넣고 JS에서 boolean 변환
-		let isLoggedIn = '${sessionScope.loginUser != null}' === 'true';
+		let isLoggedIn = $
+		{
+			sessionScope.loginUser != null ? 'true' : 'false'
+		};
 
-		if (!isLoggedIn) {
-			const currentURL = window.location.pathname
-					+ window.location.search;
-			window.location.href = "/login?redirect="
-					+ encodeURIComponent(currentURL);
-			return;
-		}
+		/* 		if (!isLoggedIn) {
+		 const currentURL = window.location.pathname
+		 + window.location.search;
+		 window.location.href = "/login?redirect="
+		 + encodeURIComponent(currentURL);
+		 return;
+		 } */
 
 		// 댓글 등록 버튼
 		$("#commentForm").submit(function(e) {
