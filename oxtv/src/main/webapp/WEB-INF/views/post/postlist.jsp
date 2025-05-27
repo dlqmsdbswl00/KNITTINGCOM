@@ -31,5 +31,19 @@
 			</c:forEach>
 		</tbody>
 	</table>
+	<c:forEach var="post" items="${postsPage.content}">
+		<div>
+			<a href="/posts/${post.id}">${post.title}</a> - ${post.user.userName}
+			- ${post.formattedCreatedAt}
+		</div>
+	</c:forEach>
+
+	<c:if test="${postsPage.hasPrevious()}">
+		<a href="/posts?page=${postsPage.number - 1}">이전</a>
+	</c:if>
+	<c:if test="${postsPage.hasNext()}">
+		<a href="/posts?page=${postsPage.number + 1}">다음</a>
+	</c:if>
+
 </body>
 </html>
