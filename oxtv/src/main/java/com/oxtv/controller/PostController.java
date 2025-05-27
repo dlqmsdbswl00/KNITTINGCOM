@@ -12,6 +12,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -29,17 +33,21 @@ public class PostController {
 	}
 
 	@GetMapping
-	public String listPosts(Model model) {
-	    List<Post> posts = postService.getAllPosts();
+	public String listPosts(@RequestParam(defaultValue = "0") int page, Model model) {
+		int pageSize = 10;
+	    Pageable pageable = PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "id")); 
 	    
-	    // Lazy 로딩 대비 → 강제 초기화
-	    posts.forEach(post -> post.getUser().getNickname());
+		Page<Post> postsPage = postService.getPostsPage(pageable);
+		
+		postsPage.getContent().forEach(post -> post.getUser().getNickname()); // Lazy 로딩 대비
 
-	    model.addAttribute("posts", posts);
-	    return "post/postlist";
+	    model.addAttribute("posts", postsPage.getContent());
+		model.addAttribute("postsPage", postsPage); // Page<Post> 통째로 넘김
+		model.addAttribute("currentPage", page);
+		model.addAttribute("totalPages", postsPage.getTotalPages());
+
+		return "post/postlist";
 	}
-	
-	
 
 	@GetMapping("/new")
 	public String showPostForm(HttpSession session, Model model) {

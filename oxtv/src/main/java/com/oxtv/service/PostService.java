@@ -4,6 +4,11 @@ import com.oxtv.model.Post;
 import com.oxtv.model.User;
 import com.oxtv.repository.PostRepository;
 import jakarta.transaction.Transactional;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -42,4 +47,10 @@ public class PostService {
     public List<Post> getPostsByUser(User user) {
         return postRepository.findByUser(user);
     }
+    
+    public Page<Post> getPostsPage(Pageable pageable) {
+        return postRepository.findAll(pageable);
+    }
+
+
 }

@@ -21,7 +21,7 @@
 			</tr>
 		</thead>
 		<tbody>
-			<c:forEach var="post" items="${posts}">
+			<c:forEach var="post" items="${postsPage.content}">
 				<tr>
 					<td>${post.id}</td>
 					<td><a href="/posts/${post.id}">${post.title}</a></td>
@@ -31,5 +31,13 @@
 			</c:forEach>
 		</tbody>
 	</table>
+
+	<c:if test="${postsPage.hasPrevious()}">
+		<a href="/posts?page=${postsPage.number - 1}">이전</a>
+	</c:if>
+	<c:if test="${postsPage.hasNext()}">
+		<a href="/posts?page=${postsPage.number + 1}">다음</a>
+	</c:if>
+
 </body>
 </html>

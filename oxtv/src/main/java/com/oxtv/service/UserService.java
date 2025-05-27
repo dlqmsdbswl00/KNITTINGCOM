@@ -1,6 +1,9 @@
 package com.oxtv.service;
 
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.oxtv.model.User;
@@ -37,13 +40,15 @@ public class UserService {
     // 로그인 인증 처리
     // 인증 성공 시 User 리턴, 실패 시 null 리턴
     public User authenticate(String userId, String rawPassword) {
-        User user = userRepository.findByUserId(userId);
-        if (user == null) {
+        Optional<User> userOpt = userRepository.findByUserId(userId);
+        if (userOpt.isEmpty()) {
             return null;
         }
+        User user = userOpt.get();  // Optional에서 User 꺼내기
         if (!passwordEncoder.matches(rawPassword, user.getUserPassword())) {
             return null;
         }
         return user;
     }
+
 }
