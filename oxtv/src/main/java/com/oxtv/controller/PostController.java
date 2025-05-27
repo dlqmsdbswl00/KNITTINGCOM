@@ -60,12 +60,21 @@ public class PostController {
 			return "redirect:/login";
 		}
 		model.addAttribute("post", new Post());
+		model.addAttribute("loginUser", loginUser);
+
+		boolean isAdmin = loginUser.getRole() == Role.ADMIN;
+		model.addAttribute("isAdmin", isAdmin);
+
+		model.addAttribute("roleClassName", loginUser.getRole().getClass().getName());
+		model.addAttribute("roleName", loginUser.getRole().name());
+
 		return "post/newpost";
 	}
 
 	@PostMapping("/new")
 	public String createPost(@RequestParam String title, @RequestParam String content, @RequestParam String category,
 			@SessionAttribute("loginUser") User loginUser) {
+
 // 관리자 아니면 공지 못 쓰게 방어
 		if (!loginUser.getRole().equals(Role.ADMIN) && category.equals("NOTICE")) {
 			category = "FREE"; // 또는 에러 처리

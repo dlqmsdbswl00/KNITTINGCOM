@@ -9,49 +9,29 @@
 
 	<h2>게시글 작성</h2>
 
-
-	<p>
-		DEBUG: role = [
-		<c:out value="${sessionScope.loginUser.role}" />
-		]
-	</p>
-	<p>
-		DEBUG: role class = [
-		<c:out value="${sessionScope.loginUser.role.class.name}" />
-		]
-	</p>
-
+	<p>DEBUG: role name = [${roleName}]</p>
 
 	<form method="post" action="/posts/new">
-		제목: <input type="text" name="title" required><br> 내용:<br>
-		<textarea name="content" rows="10" cols="50" required></textarea>
+
 		<br>카테고리: <select name="category" required>
-			<c:choose>
-				<c:when test="${sessionScope.loginUser.role.toString() == 'ADMIN'}">
-					<option value="DOAN"
-						<c:if test="${post.category == 'DOAN'}">selected</c:if>>도안</option>
-					<option value="FREE"
-						<c:if test="${post.category == 'FREE'}">selected</c:if>>자유</option>
-					<option value="QUESTION"
-						<c:if test="${post.category == 'QUESTION'}">selected</c:if>>질문</option>
-					<option value="NOTICE"
-						<c:if test="${post.category == 'NOTICE'}">selected</c:if>>공지</option>
-				</c:when>
-				<c:otherwise>
-					<option value="DOAN"
-						<c:if test="${post.category == 'DOAN'}">selected</c:if>>도안</option>
-					<option value="FREE"
-						<c:if test="${post.category == 'FREE'}">selected</c:if>>자유</option>
-					<option value="QUESTION"
-						<c:if test="${post.category == 'QUESTION'}">selected</c:if>>질문</option>
-				</c:otherwise>
-			</c:choose>
-		</select><br>
+			<option value="DOAN" ${post.category == 'DOAN' ? 'selected' : ''}>도안</option>
+			<option value="FREE" ${post.category == 'FREE' ? 'selected' : ''}>자유</option>
+			<option value="QUESTION"
+				${post.category == 'QUESTION' ? 'selected' : ''}>질문</option>
+
+			<c:if test="${isAdmin}">
+				<option value="NOTICE"
+					${post.category == 'NOTICE' ? 'selected' : ''}>공지</option>
+			</c:if>
+		</select> <br> 제목: <input type="text" name="title" required><br>
+		내용:<br>
+		<textarea name="content" rows="10" cols="50" required></textarea>
+
+
 
 
 		<button type="submit">등록</button>
 	</form>
-	<p>Role: ${sessionScope.loginUser.role}</p>
 
 </body>
 </html>

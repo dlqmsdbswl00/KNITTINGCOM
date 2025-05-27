@@ -48,7 +48,7 @@ public class DataLoader implements CommandLineRunner {
 			userRepository.save(testUser);
 			System.out.println("✅ testuser 계정 생성 완료 (ID: test / PW: test)");
 		} else {
-			System.out.println("ℹ️ testuser 계정 이미 존재함");
+			System.out.println("ℹ️ testuser 계정 이미 존재함 (ID: test / PW: test)");
 		}
 
 		Optional<User> testUserOpt = userRepository.findByUserId("test");
@@ -74,7 +74,7 @@ public class DataLoader implements CommandLineRunner {
 		}
 
 		if (postRepository.countByUser(testUser) == 0) {
-			String[] categories = {"도안", "자유", "질문", "공지"};
+			String[] categories = {"자유", "질문", "도안", "공지"};
 			Random random = new Random();
 			
 			for (int i = 1; i <= 30; i++) {
