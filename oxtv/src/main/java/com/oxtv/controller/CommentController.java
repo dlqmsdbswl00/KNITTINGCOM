@@ -35,7 +35,8 @@ public class CommentController {
 		if (loginUser == null)
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 필요");
 
-		Post post = postService.getPostById(postId).orElseThrow(() -> new IllegalArgumentException("게시글 없음"));
+		Post post = postService.getPostById(postId)
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "게시글 없음"));
 
 		// 댓글에 포함된 사용자 정보까지 초기화
 		post.getComments().forEach(comment -> {
@@ -78,19 +79,18 @@ public class CommentController {
 
 	@PostMapping("/{id}/delete")
 	@ResponseBody
-	public String deleteComment(@PathVariable Integer id, HttpSession session) {
+	public ResponseEntity<String> deleteComment(@PathVariable Integer id, HttpSession session) {
 		User loginUser = (User) session.getAttribute("loginUser");
 		if (loginUser == null)
-			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 필요");
 
-		Comment comment = commentService.findById(id); // ← 여기서 객체 꺼냄
-
+		Comment comment = commentService.findById(id);
 		if (!comment.getUser().getId().equals(loginUser.getId())) {
-			throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("권한 없음");
 		}
 
-		commentService.deleteComment(id); // ← id로 삭제
-		return "ok";
+		commentService.deleteComment(id);
+		return ResponseEntity.ok("ok");
 	}
 
 }

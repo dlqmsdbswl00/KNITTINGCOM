@@ -2,7 +2,9 @@ package com.oxtv.service;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.oxtv.model.Comment;
 import com.oxtv.repository.CommentRepository;
@@ -30,7 +32,6 @@ public class CommentService {
     
     public Comment findById(Integer id) {
         return commentRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("댓글 없음"));
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "댓글 없음"));
     }
-
 }

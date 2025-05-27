@@ -50,7 +50,9 @@ public class LoginController {
 
 	@GetMapping("/logout")
 	public String logout(HttpSession session) {
-		session.invalidate();
-		return "redirect:/";
+	    System.out.println("로그아웃 전 세션 ID: " + session.getId());
+	    session.invalidate();
+	    System.out.println("세션 무효화 완료");
+	    return "redirect:/";
 	}
 }
