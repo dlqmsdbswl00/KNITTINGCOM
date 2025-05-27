@@ -5,7 +5,6 @@
 <html>
 <head>
 <title>게시글 보기</title>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
 	<%@ include file="/WEB-INF/views/common/header.jsp"%>
@@ -17,17 +16,13 @@
 	<p>
 		<strong>작성일:</strong> ${formattedCreatedAt}
 	</p>
-	<c:if
-		test="${post.updatedAt != null && post.updatedAt ne post.createdAt}"
-	>
+	<c:if test="${post.updatedAt != null && post.updatedAt ne post.createdAt}">
 		<small style="color: gray;">(수정됨)</small>
 	</c:if>
 	<p>${post.content}</p>
 
 	<hr>
-	<c:if
-		test="${not empty sessionScope.loginUser and post.user.userId eq sessionScope.loginUser.userId}"
-	>
+	<c:if test="${not empty sessionScope.loginUser and post.user.userId eq sessionScope.loginUser.userId}">
 		<a href="/posts/${post.id}/edit">수정</a>
 	</c:if>
 
@@ -42,15 +37,13 @@
 		<c:forEach var="comment" items="${post.comments}">
 			<div class="comment" data-id="${comment.id}">
 				<strong>${comment.user.nickname}</strong>
-				<c:if
-					test="${comment.updatedAt != null && comment.updatedAt ne comment.createdAt}"
-				>
+
+				<c:if test="${comment.updatedAt != null && comment.updatedAt ne comment.createdAt}">
 					<small style="color: gray;">(수정됨)</small>
 				</c:if>
+
 				<p class="comment-content">${comment.content}</p>
-				<c:if
-					test="${sessionScope.loginUser != null && sessionScope.loginUser.id == comment.user.id}"
-				>
+				<c:if test="${sessionScope.loginUser != null && sessionScope.loginUser.id == comment.user.id}">
 					<button class="edit-btn">수정</button>
 					<button class="delete-btn">삭제</button>
 				</c:if>
@@ -72,94 +65,108 @@
 		<button type="submit">작성</button>
 	</form>
 
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script>
+		let isLoggedIn = "${sessionScope.loginUser != null ? 'true' : 'false'}";
+	</script>
+
 
 	<script>
-		// JSP EL에서 true/false를 문자열로 넣고 JS에서 boolean 변환
-		let isLoggedIn = '${sessionScope.loginUser != null}' === 'true';
+	$(document).ready(function () {
+	    // 댓글 등록 버튼
+	    $("#commentForm").submit(function (e) {
+	        e.preventDefault();
 
-		if (!isLoggedIn) {
-			const currentURL = window.location.pathname
-					+ window.location.search;
-			window.location.href = "/login?redirect="
-					+ encodeURIComponent(currentURL);
-			return;
-		}
+	        let postId = $("#postId").val();
+	        let content = $("#commentContent").val();
 
-		// 댓글 등록 버튼
-		$("#commentForm").submit(function(e) {
-			e.preventDefault(); // 폼 기본 전송 막기
+	        if (!content.trim()) {
+	            alert("댓글을 입력하세요.");
+	            return;
+	        }
 
-			if (!isLoggedIn) {
-				alert("댓글 작성하려면 로그인하세요!");
-				window.location.href = "/login";
-				return;
-			}
+	        $.ajax({
+	            type: "POST",
+	            url: "/comments/create",
+	            data: {
+	                postId: postId,
+	                content: content
+	            },
+	            success: function () {
+	                location.reload();
+	            },
+	            error: function (xhr) {
+	                if (xhr.status === 401) {
+	                    alert("로그인이 필요합니다.");
+	                    const currentURL = window.location.pathname + window.location.search;
+	                    window.location.href = "/login?redirect=" + encodeURIComponent(currentURL);
+	                } else {
+	                    alert("댓글 작성 실패: " + xhr.responseText);
+	                    console.error("에러 응답:", xhr);
+	                }
+	            }
+	        });
+	    });
 
-			let postId = $("#postId").val();
-			let content = $("#commentContent").val();
+	    // 댓글 수정 버튼
+	    $(document).on("click", ".edit-btn", function () {
+	        let commentDiv = $(this).closest(".comment");
+	        commentDiv.find(".comment-content").hide();
+	        commentDiv.find(".edit-btn, .delete-btn").hide();
+	        commentDiv.find(".edit-form").show();
+	    });
 
-			$.post("/comments/create", {
-				postId : postId,
-				content : content
-			}).done(function() {
-				location.reload();
-			}).fail(function(xhr) {
-				if (xhr.status === 401) {
-					alert("로그인 후 이용 가능합니다.");
-					window.location.href = "/login";
-				} else {
-					alert("댓글 작성 실패");
-				}
-			});
-		});
+	    // 취소 버튼
+	    $(document).on("click", ".cancel-edit", function () {
+	        let commentDiv = $(this).closest(".comment");
+	        commentDiv.find(".edit-form").hide();
+	        commentDiv.find(".comment-content").show();
+	        commentDiv.find(".edit-btn, .delete-btn").show();
+	    });
 
-		// 댓글 수정 버튼
-		$(".edit-btn").click(function() {
-			let commentDiv = $(this).closest(".comment");
-			commentDiv.find(".comment-content").hide();
-			commentDiv.find(".edit-btn, .delete-btn").hide();
-			commentDiv.find(".edit-form").show();
-		});
+	    // 저장 버튼
+	    $(document).on("click", ".submit-edit", function () {
+	        let commentDiv = $(this).closest(".comment");
+	        let id = commentDiv.data("id");
+	        let content = commentDiv.find("textarea").val();
 
-		// 취소 버튼
-		$(".cancel-edit").click(function() {
-			let commentDiv = $(this).closest(".comment");
-			commentDiv.find(".edit-form").hide();
-			commentDiv.find(".comment-content").show();
-			commentDiv.find(".edit-btn, .delete-btn").show();
-		});
+	        $.ajax({
+	            type: "POST",
+	            url: "/comments/" + id + "/edit",
+	            data: {
+	                content: content
+	            },
+	            success: function () {
+	                commentDiv.find(".comment-content").text(content).show();
+	                commentDiv.find(".edit-form").hide();
+	                commentDiv.find(".edit-btn, .delete-btn").show();
+	            },
+	            error: function () {
+	                alert("댓글 수정 실패");
+	            }
+	        });
+	    });
 
-		// 저장 버튼
-		$(".submit-edit").click(function() {
-			let commentDiv = $(this).closest(".comment");
-			let id = commentDiv.data("id");
-			let content = commentDiv.find("textarea").val();
+	    // 삭제 버튼
+	    $(document).on("click", ".delete-btn", function () {
+	        if (!confirm("댓글을 삭제하시겠습니까?")) return;
 
-			$.post("/comments/" + id + "/edit", {
-				content : content
-			}).done(function() {
-				commentDiv.find(".comment-content").text(content).show();
-				commentDiv.find(".edit-form").hide();
-				commentDiv.find(".edit-btn, .delete-btn").show();
-			}).fail(function() {
-				alert("수정 실패");
-			});
-		});
+	        let commentDiv = $(this).closest(".comment");
+	        let id = commentDiv.data("id");
 
-		// 삭제 버튼
-		$(".delete-btn").click(function() {
-			if (!confirm("댓글을 삭제하시겠습니까?"))
-				return;
+	        $.ajax({
+	            type: "POST",
+	            url: "/comments/" + id + "/delete",
+	            success: function () {
+	                commentDiv.remove();
+	            },
+	            error: function () {
+	                alert("댓글 삭제 실패");
+	            }
+	        });
+	    });
+	});
 
-			let commentDiv = $(this).closest(".comment");
-			let id = commentDiv.data("id");
-
-			$.post("/comments/" + id + "/delete").done(function() {
-				commentDiv.remove();
-			}).fail(function() {
-				alert("삭제 실패");
-			});
-		});
 	</script>
 
 </body>
