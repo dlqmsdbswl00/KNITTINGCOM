@@ -8,6 +8,20 @@
 	<%@ include file="/WEB-INF/views/common/header.jsp"%>
 
 	<h2>게시글 작성</h2>
+
+
+	<p>
+		DEBUG: role = [
+		<c:out value="${sessionScope.loginUser.role}" />
+		]
+	</p>
+	<p>
+		DEBUG: role class = [
+		<c:out value="${sessionScope.loginUser.role.class.name}" />
+		]
+	</p>
+
+
 	<form method="post" action="/posts/new">
 		제목: <input type="text" name="title" required><br> 내용:<br>
 		<textarea name="content" rows="10" cols="50" required></textarea>
