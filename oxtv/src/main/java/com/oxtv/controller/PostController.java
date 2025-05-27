@@ -34,21 +34,20 @@ public class PostController {
 
 	@GetMapping
 	public String listPosts(@RequestParam(defaultValue = "0") int page, Model model) {
-	    int pageSize = 10;
-
-	    Pageable pageable = PageRequest.of(page, pageSize, Sort.by("createdAt").descending());
-	    Page<Post> postsPage = postService.getPostsPage(page, pageSize);
-
-	    postsPage.getContent().forEach(post -> post.getUser().getNickname());
+		int pageSize = 10;
+	    Pageable pageable = PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "id")); 
+	    
+		Page<Post> postsPage = postService.getPostsPage(pageable);
+		
+		postsPage.getContent().forEach(post -> post.getUser().getNickname()); // Lazy 로딩 대비
 
 	    model.addAttribute("posts", postsPage.getContent());
-	    model.addAttribute("currentPage", page);
-	    model.addAttribute("totalPages", postsPage.getTotalPages());
+		model.addAttribute("postsPage", postsPage); // Page<Post> 통째로 넘김
+		model.addAttribute("currentPage", page);
+		model.addAttribute("totalPages", postsPage.getTotalPages());
 
-	    return "post/postlist";
+		return "post/postlist";
 	}
-
-	
 
 	@GetMapping("/new")
 	public String showPostForm(HttpSession session, Model model) {

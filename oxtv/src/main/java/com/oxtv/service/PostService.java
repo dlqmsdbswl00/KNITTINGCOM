@@ -48,9 +48,9 @@ public class PostService {
         return postRepository.findByUser(user);
     }
     
-    public Page<Post> getPostsPage(int pageNum, int pageSize) {
-        Pageable pageable = PageRequest.of(pageNum, pageSize, Sort.by("createdAt").descending());
+    public Page<Post> getPostsPage(Pageable pageable) {
         return postRepository.findAll(pageable);
     }
+
 
 }

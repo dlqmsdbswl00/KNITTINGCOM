@@ -15,19 +15,20 @@ import java.util.Optional;
 @Component
 public class DataLoader implements CommandLineRunner {
 
-    private final PostRepository postRepository;
-    private final UserRepository userRepository;
-    private final CommentRepository commentRepository;
+	private final PostRepository postRepository;
+	private final UserRepository userRepository;
+	private final CommentRepository commentRepository;
 
-    public DataLoader(PostRepository postRepository, UserRepository userRepository, CommentRepository commentRepository) {
-        this.postRepository = postRepository;
-        this.userRepository = userRepository;
-        this.commentRepository = commentRepository;
-    }
+	public DataLoader(PostRepository postRepository, UserRepository userRepository,
+			CommentRepository commentRepository) {
+		this.postRepository = postRepository;
+		this.userRepository = userRepository;
+		this.commentRepository = commentRepository;
+	}
 
-    @Override
-    public void run(String... args) throws Exception {
-    	String testUserId = "test"; // 로그인용 ID
+	@Override
+	public void run(String... args) throws Exception {
+		String testUserId = "test"; // 로그인용 ID
 		Optional<User> existingUser = userRepository.findByUserId(testUserId);
 		if (existingUser.isEmpty()) { // null 체크로 바꾸기
 			User testUser = new User();
@@ -43,44 +44,47 @@ public class DataLoader implements CommandLineRunner {
 		} else {
 			System.out.println("ℹ️ testuser 계정 이미 존재함");
 		}
-		
-        Optional<User> testUserOpt = userRepository.findByUserId("test");
-        if (testUserOpt.isEmpty()) {
-            System.out.println("test 유저가 없어서 게시글/댓글 생성 안 함.");
-            return;
-        }
-        User testUser = testUserOpt.get();
 
-        Optional<User> commenterOpt = userRepository.findByUserId("commenter");
-        User commenter;
-        if (commenterOpt.isEmpty()) {
-            commenter = new User();
-            commenter.setUserId("commenter");
-            commenter.setUserName("댓글러");
-            commenter.setNickname("댓글왕");
-            commenter.setUserPassword("commenter"); // 평문 주의
-            commenter.setEmail("commenter@example.com");
-            userRepository.save(commenter);
-        } else {
-            commenter = commenterOpt.get();
-        }
+		Optional<User> testUserOpt = userRepository.findByUserId("test");
+		if (testUserOpt.isEmpty()) {
+			System.out.println("test 유저가 없어서 게시글/댓글 생성 안 함.");
+			return;
+		}
+		User testUser = testUserOpt.get();
 
-        for (int i = 1; i <= 50; i++) {
-            Post post = new Post();
-            post.setTitle("테스트 글 " + i);
-            post.setContent("테스트 내용입니다. 게시물 번호 " + i);
-            post.setUser(testUser);
-            postRepository.save(post);
+		Optional<User> commenterOpt = userRepository.findByUserId("commenter");
+		User commenter;
+		if (commenterOpt.isEmpty()) {
+			commenter = new User();
+			commenter.setUserId("commenter");
+			commenter.setUserName("댓글러");
+			commenter.setNickname("댓글왕");
+			commenter.setUserPassword("commenter"); // 평문 주의
+			commenter.setEmail("commenter@example.com");
+			userRepository.save(commenter);
+		} else {
+			commenter = commenterOpt.get();
+		}
 
-            for (int j = 1; j <= 3; j++) {
-                Comment comment = new Comment();
-                comment.setPost(post);
-                comment.setUser(commenter);
-                comment.setContent("댓글 " + j + " : 테스트 댓글 내용입니다.");
-                commentRepository.save(comment);
-            }
-        }
+		if (postRepository.countByUser(testUser) == 0) {
+			for (int i = 1; i <= 50; i++) {
+				Post post = new Post();
+				post.setTitle("테스트 글 " + i);
+				post.setContent("테스트 내용입니다. 게시물 번호 " + i);
+				post.setUser(testUser);
+				postRepository.save(post);
 
-        System.out.println("테스트 게시글 50개 및 댓글 150개 생성 완료.");
-    }
+				for (int j = 1; j <= 3; j++) {
+					Comment comment = new Comment();
+					comment.setPost(post);
+					comment.setUser(commenter);
+					comment.setContent("댓글 " + j + " : 테스트 댓글 내용입니다.");
+					commentRepository.save(comment);
+				}
+			}
+			System.out.println("테스트 게시글 50개 및 댓글 150개 생성 완료.");
+		} else {
+			System.out.println("✅ 테스트 게시글 이미 있음. 추가 생성 안 함.");
+		}
+	}
 }

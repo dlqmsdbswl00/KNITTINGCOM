@@ -21,7 +21,7 @@
 			</tr>
 		</thead>
 		<tbody>
-			<c:forEach var="post" items="${posts}">
+			<c:forEach var="post" items="${postsPage.content}">
 				<tr>
 					<td>${post.id}</td>
 					<td><a href="/posts/${post.id}">${post.title}</a></td>
@@ -31,12 +31,6 @@
 			</c:forEach>
 		</tbody>
 	</table>
-	<c:forEach var="post" items="${postsPage.content}">
-		<div>
-			<a href="/posts/${post.id}">${post.title}</a> - ${post.user.userName}
-			- ${post.formattedCreatedAt}
-		</div>
-	</c:forEach>
 
 	<c:if test="${postsPage.hasPrevious()}">
 		<a href="/posts?page=${postsPage.number - 1}">이전</a>

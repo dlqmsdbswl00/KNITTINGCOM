@@ -10,6 +10,7 @@ import java.util.List;
 
 public interface PostRepository extends JpaRepository<Post, Integer> {
 	List<Post> findByUser(User user);
+	long countByUser(User user);
 
 	// 최신순 페이징 조회 메서드 추가
 	Page<Post> findAllByOrderByCreatedAtDesc(Pageable pageable);
