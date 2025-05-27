@@ -23,8 +23,8 @@
 			required><br> 내용:<br>
 		<textarea name="content" rows="10" cols="50" required>${post.content}</textarea>
 
+		<button type="submit">수정</button>
 	</form>
-	<button type="submit">수정</button>
 	<form method="post" action="/posts/${post.id}/delete"
 		style="display: inline;">
 		<button type="submit" onclick="return confirm('게시글을 삭제할까요?')">삭제</button>

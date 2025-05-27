@@ -17,6 +17,10 @@
 	<p>
 		<strong>작성일:</strong> ${formattedCreatedAt}
 	</p>
+	<c:if
+		test="${post.updatedAt != null && post.updatedAt ne post.createdAt}">
+		<small style="color: gray;">(수정됨)</small>
+	</c:if>
 	<p>${post.content}</p>
 
 	<hr>
@@ -36,6 +40,10 @@
 		<c:forEach var="comment" items="${post.comments}">
 			<div class="comment" data-id="${comment.id}">
 				<strong>${comment.user.nickname}</strong>
+				<c:if
+					test="${comment.updatedAt != null && comment.updatedAt ne comment.createdAt}">
+					<small style="color: gray;">(수정됨)</small>
+				</c:if>
 				<p class="comment-content">${comment.content}</p>
 				<c:if
 					test="${sessionScope.loginUser != null && sessionScope.loginUser.id == comment.user.id}">
@@ -62,20 +70,32 @@
 
 
 	<script>
+	 let isLoggedIn = ${sessionScope.loginUser != null ? 'true' : 'false'};
 		// 댓글 등록 버튼
 		$("#commentForm").submit(function(e) {
 			e.preventDefault(); // 폼 기본 전송 막기
+
+			if (!isLoggedIn) {
+				alert("댓글 작성하려면 로그인하세요!");
+				window.location.href = "/login";
+				return;
+			}
 
 			let postId = $("#postId").val();
 			let content = $("#commentContent").val();
 
 			$.post("/comments/create", {
-				postId : postId,
-				content : content
-			}).done(function() {
-				location.reload(); // 성공 시 새로고침
-			}).fail(function() {
-				alert("댓글 작성 실패");
+		        postId: postId,
+		        content: content
+		    }).done(function() {
+		        location.reload();
+		    }).fail(function(xhr) {
+		        if (xhr.status === 401) {
+		            alert("로그인 후 이용 가능합니다.");
+		            window.location.href = "/login";
+		        } else {
+		            alert("댓글 작성 실패");
+		        }
 			});
 		});
 

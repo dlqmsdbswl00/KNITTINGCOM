@@ -1,6 +1,7 @@
 package com.oxtv.controller;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -27,10 +28,13 @@ public class CommentController {
 	}
 
 	@PostMapping("/create")
-	public String createComment(@RequestParam Integer postId, @RequestParam String content, HttpSession session) {
+	@ResponseBody
+	public ResponseEntity<?> createComment(@RequestParam Integer postId,
+            @RequestParam String content,
+            HttpSession session) {		
 		User loginUser = (User) session.getAttribute("loginUser");
 		if (loginUser == null)
-			return "redirect:/login";
+	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 필요");
 
 		Post post = postService.getPostById(postId).orElseThrow(() -> new IllegalArgumentException("게시글 없음"));
 
@@ -47,7 +51,8 @@ public class CommentController {
 		comment.setContent(content);
 
 		commentService.saveComment(comment);
-		return "redirect:/posts/" + postId;
+		
+		return ResponseEntity.ok("댓글 작성 성공");
 	}
 
 	@PostMapping("/{id}/edit")
