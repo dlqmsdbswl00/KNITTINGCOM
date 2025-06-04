@@ -39,4 +39,8 @@ public class File {
 	@Column(name = "saved_path")
 	private String savedPath;
 
+	public String getSavedPath() {
+	    return "C:/Users/dlqms/hk-source/miniproject/oxtv/src/main/resources/static" + this.uploadPath;
+	}
+
 }
