@@ -1,9 +1,11 @@
 package com.oxtv.controller;
 
 import com.oxtv.model.Category;
+import com.oxtv.model.File;
 import com.oxtv.model.Post;
 import com.oxtv.model.Role;
 import com.oxtv.model.User;
+import com.oxtv.service.FileService;
 import com.oxtv.service.PostService;
 import com.oxtv.repository.UserRepository;
 
@@ -24,6 +26,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Controller
 @RequestMapping("/posts")
@@ -31,10 +34,12 @@ public class PostController {
 
 	private final PostService postService;
 	private final UserRepository userRepository;
+	private final FileService fileService;
 
-	public PostController(PostService postService, UserRepository userRepository) {
+	public PostController(PostService postService, UserRepository userRepository, FileService fileService) {
 		this.postService = postService;
 		this.userRepository = userRepository;
+		this.fileService = fileService;
 	}
 
 	@GetMapping
@@ -78,7 +83,7 @@ public class PostController {
 
 	@PostMapping("/new")
 	public String createPost(@RequestParam String title, @RequestParam String content, @RequestParam String category,
-			@SessionAttribute("loginUser") User loginUser) {
+			@RequestParam("files") MultipartFile[] files, @SessionAttribute("loginUser") User loginUser) {
 
 		Category categoryEnum = Category.valueOf(category);
 
@@ -98,6 +103,11 @@ public class PostController {
 		post.setUser(loginUser);
 
 		postService.createPost(post);
+
+		if (files != null && files.length > 0) {
+			fileService.saveFiles(post.getId(), files); // 파일 저장
+		}
+
 		return "redirect:/posts";
 	}
 
@@ -113,7 +123,11 @@ public class PostController {
 			System.out.println("== 로그인 유저 없음");
 		}
 
+		List<File> fileList = fileService.getFilesByPostId(id);
+
 		model.addAttribute("post", post);
+		model.addAttribute("fileList", fileList);
+
 		String formattedDate = post.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH:mm"));
 		model.addAttribute("formattedCreatedAt", formattedDate);
 
@@ -168,7 +182,7 @@ public class PostController {
 		} else if (loginUser.getRole() == Role.USER && post.getCategory() == Category.공지) {
 			throw new IllegalArgumentException("일반 유저는 공지 작성/수정 불가");
 		}
-		
+
 		// 수정 내용 반영
 		existingPost.setTitle(post.getTitle());
 		existingPost.setContent(post.getContent());

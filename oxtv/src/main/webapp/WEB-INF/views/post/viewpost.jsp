@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
 <html>
 <head>
@@ -20,6 +21,20 @@
 		<small style="color: gray;">(수정됨)</small>
 	</c:if>
 	<p>${post.content}</p>
+
+	<c:forEach var="file" items="${fileList}">
+		<c:choose>
+			<c:when test="${fn:endsWith(file.originalName, '.png') 
+                        || fn:endsWith(file.originalName, '.jpg') 
+                        || fn:endsWith(file.originalName, '.jpeg') 
+                        || fn:endsWith(file.originalName, '.gif')}">
+				<img src="${file.uploadPath}" style="max-width: 400px;" />
+			</c:when>
+			<c:otherwise>
+				<a href="${file.uploadPath}" download>${file.originalName}</a>
+			</c:otherwise>
+		</c:choose>
+	</c:forEach>
 
 	<hr>
 	<c:if test="${not empty sessionScope.loginUser and post.user.userId eq sessionScope.loginUser.userId}">
@@ -56,6 +71,11 @@
 			<hr>
 		</c:forEach>
 	</div>
+
+	<c:forEach var="file" items="${fileList}">
+		<p>파일명: ${file.originalName}, URL: ${file.uploadPath}</p>
+	</c:forEach>
+
 
 	<h3>댓글 작성</h3>
 	<form id="commentForm">

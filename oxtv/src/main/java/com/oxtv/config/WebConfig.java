@@ -3,6 +3,7 @@ package com.oxtv.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.oxtv.interceptor.LoginCheckInterceptor;
@@ -25,4 +26,11 @@ public class WebConfig implements WebMvcConfigurer {
 		) // 보호할 URL 패턴
 				.excludePathPatterns("/login", "/logout", "/register", "/css/**", "/js/**", "/img/**"); // 예외
 	}
+	
+	@Override
+	public void addResourceHandlers(ResourceHandlerRegistry registry) {
+	    registry.addResourceHandler("/uploads/**")
+	            .addResourceLocations("file:///C:/Users/dlqms/hk-source/miniproject/oxtv/src/main/resources/static/uploads/");
+	}
+
 }
