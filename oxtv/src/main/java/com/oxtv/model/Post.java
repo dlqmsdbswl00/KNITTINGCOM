@@ -8,6 +8,8 @@ import java.util.List;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -41,8 +43,10 @@ public class Post {
 	@JoinColumn(name = "user_id", nullable = false)
 	private User user;
 	
-	@Column(nullable = false)
-	private String category;  // 카테고리 추가 (ex: 도안, 자유, 질문, 공지)
+	@Enumerated(EnumType.STRING)
+	private Category category;
+//	@Column(nullable = false)
+//	private String category;  // 카테고리 추가 (ex: 도안, 자유, 질문, 공지)
 
 
 	@Column(name = "created_at", updatable = false)

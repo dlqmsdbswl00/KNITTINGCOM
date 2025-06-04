@@ -1,10 +1,16 @@
 package com.oxtv.controller;
 
+import com.oxtv.model.Category;
+import com.oxtv.model.File;
 import com.oxtv.model.Post;
 import com.oxtv.model.Role;
 import com.oxtv.model.User;
+import com.oxtv.service.FileService;
 import com.oxtv.service.PostService;
 import com.oxtv.repository.UserRepository;
+
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.servlet.http.HttpSession;
 
 import java.time.format.DateTimeFormatter;
@@ -20,6 +26,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Controller
 @RequestMapping("/posts")
@@ -27,10 +34,12 @@ public class PostController {
 
 	private final PostService postService;
 	private final UserRepository userRepository;
+	private final FileService fileService;
 
-	public PostController(PostService postService, UserRepository userRepository) {
+	public PostController(PostService postService, UserRepository userRepository, FileService fileService) {
 		this.postService = postService;
 		this.userRepository = userRepository;
+		this.fileService = fileService;
 	}
 
 	@GetMapping
@@ -56,6 +65,7 @@ public class PostController {
 	@GetMapping("/new")
 	public String showPostForm(HttpSession session, Model model) {
 		User loginUser = (User) session.getAttribute("loginUser");
+
 		if (loginUser == null) {
 			return "redirect:/login";
 		}
@@ -73,20 +83,31 @@ public class PostController {
 
 	@PostMapping("/new")
 	public String createPost(@RequestParam String title, @RequestParam String content, @RequestParam String category,
-			@SessionAttribute("loginUser") User loginUser) {
+			@RequestParam("files") MultipartFile[] files, @SessionAttribute("loginUser") User loginUser) {
 
-// 관리자 아니면 공지 못 쓰게 방어
-		if (!loginUser.getRole().equals(Role.ADMIN) && category.equals("NOTICE")) {
-			category = "FREE"; // 또는 에러 처리
+		Category categoryEnum = Category.valueOf(category);
+
+		if (loginUser.getRole() == Role.USER && categoryEnum == Category.공지) {
+			throw new IllegalArgumentException("일반 유저는 공지 작성 불가");
 		}
 
+		if (loginUser.getRole() == Role.ADMIN && categoryEnum != Category.공지) {
+			throw new IllegalArgumentException("관리자는 공지만 작성 가능");
+		}
+
+		// 게시글 작성
 		Post post = new Post();
 		post.setTitle(title);
 		post.setContent(content);
-		post.setCategory(category);
+		post.setCategory(categoryEnum);
 		post.setUser(loginUser);
 
 		postService.createPost(post);
+
+		if (files != null && files.length > 0) {
+			fileService.saveFiles(post.getId(), files); // 파일 저장
+		}
+
 		return "redirect:/posts";
 	}
 
@@ -102,7 +123,11 @@ public class PostController {
 			System.out.println("== 로그인 유저 없음");
 		}
 
+		List<File> fileList = fileService.getFilesByPostId(id);
+
 		model.addAttribute("post", post);
+		model.addAttribute("fileList", fileList);
+
 		String formattedDate = post.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH:mm"));
 		model.addAttribute("formattedCreatedAt", formattedDate);
 
@@ -112,10 +137,6 @@ public class PostController {
 	@GetMapping("/{id}/edit")
 	public String editPostForm(@PathVariable Integer id, HttpSession session, Model model) {
 		User loginUser = (User) session.getAttribute("loginUser");
-		model.addAttribute("loginUser", loginUser);
-
-		boolean isAdmin = loginUser != null && loginUser.getRole() == Role.ADMIN;
-		model.addAttribute("isAdmin", isAdmin);
 
 		if (loginUser == null) {
 			// 로그인 안 됐으면 원래 요청 URL 저장
@@ -131,13 +152,24 @@ public class PostController {
 			return "redirect:/posts/" + id + "?error=not_authorized";
 		}
 
+		List<File> fileList = fileService.getFilesByPostId(id);
+		model.addAttribute("fileList", fileList);
+
 		model.addAttribute("post", post);
+		model.addAttribute("loginUser", loginUser);
+		model.addAttribute("isAdmin", loginUser.getRole() == Role.ADMIN);
+		model.addAttribute("roleName", loginUser.getRole().name());
+		model.addAttribute("roleClassName", loginUser.getRole().getClass().getName());
+
 		return "post/editpost"; // 권한 있으면 수정 페이지로 감
 	}
 
 	// updatePost
 	@PostMapping("/{id}/edit")
-	public String updatePost(@PathVariable Integer id, @ModelAttribute Post post, HttpSession session) {
+	public String updatePost(@PathVariable Integer id, @ModelAttribute Post post,
+			@RequestParam(value = "files", required = false) MultipartFile[] files,
+			@RequestParam(value = "deleteFileIds", required = false) List<Integer> deleteFileIds, HttpSession session) {
+
 		User loginUser = (User) session.getAttribute("loginUser");
 		if (loginUser == null) {
 			// 로그인 안 됐으면 원래 요청 URL 저장
@@ -150,12 +182,30 @@ public class PostController {
 			return "redirect:/posts/" + id + "?error=not_authorized";
 		}
 
-		// 댓글 유지하고, 수정할 필드만 바꿔주기
+		// 관리자: 공지만 가능 / 일반유저: 공지 못 씀
+		if (loginUser.getRole() == Role.ADMIN && post.getCategory() != Category.공지) {
+			throw new IllegalArgumentException("관리자는 공지만 작성/수정 가능");
+		} else if (loginUser.getRole() == Role.USER && post.getCategory() == Category.공지) {
+			throw new IllegalArgumentException("일반 유저는 공지 작성/수정 불가");
+		}
+
+		// 기존 게시글 업데이트
 		existingPost.setTitle(post.getTitle());
 		existingPost.setContent(post.getContent());
 		existingPost.setCategory(post.getCategory());
 
+		// 삭제할 파일 처리
+		if (deleteFileIds != null) {
+			for (Integer fileId : deleteFileIds) {
+				fileService.deleteFile(fileId); // 이거 구현 필요
+			}
+		}
+
+		if (files != null && files.length > 0) {
+			fileService.saveFiles(existingPost.getId(), files); // 기존 저장로직 재활용
+		}
 		postService.updatePost(existingPost);
+
 		return "redirect:/posts/" + id;
 	}
 

@@ -4,6 +4,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import com.oxtv.model.Category;
 import com.oxtv.model.Comment;
 import com.oxtv.model.Post;
 import com.oxtv.model.Role;
@@ -83,8 +84,9 @@ public class DataLoader implements CommandLineRunner {
 				post.setContent("테스트 내용입니다. 게시물 번호 " + i);
 				post.setUser(testUser);
 				 // 랜덤 카테고리 넣기
-			    post.setCategory(categories[random.nextInt(categories.length)]);
-
+				String selected = categories[random.nextInt(categories.length)];
+			    post.setCategory(Category.valueOf(selected)); // ✅ enum으로 변환
+			    
 				postRepository.save(post);
 
 				for (int j = 1; j <= 3; j++) {

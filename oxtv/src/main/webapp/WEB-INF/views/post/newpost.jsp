@@ -1,4 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
 <html>
 <head>
@@ -11,23 +12,25 @@
 
 	<p>DEBUG: role name = [${roleName}]</p>
 
-	<form method="post" action="/posts/new">
+	<form method="post" enctype="multipart/form-data" action="/posts/new">
+
 
 		<br>카테고리:
 		<select name="category" required>
-			<option value="도안" ${post.category == '도안' ? 'selected' : ''}>도안</option>
-			<option value="자유" ${post.category == '자유' ? 'selected' : ''}>자유</option>
-			<option value="질문" ${post.category == '질문' ? 'selected' : ''}>질문</option>
+			<option value="도안">도안</option>
+			<option value="자유">자유</option>
+			<option value="질문">질문</option>
 			<c:if test="${isAdmin}">
-				<option value="공지" ${post.category == '공지' ? 'selected' : ''}>공지</option>
+				<option value="공지">공지</option>
 			</c:if>
 		</select>
 		<br> 제목:
 		<input type="text" name="title" required>
 		<br> 내용:<br>
-
-    
 		<textarea name="content" rows="10" cols="50" required></textarea>
+		<br> 파일첨부:
+		<input type="file" name="files" multiple>
+		<br>
 
 
 
