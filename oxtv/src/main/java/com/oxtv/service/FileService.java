@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ import com.oxtv.model.Post;
 import com.oxtv.repository.FileRepository;
 import com.oxtv.repository.PostRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 import java.nio.file.StandardCopyOption;
@@ -57,7 +59,24 @@ public class FileService {
         }
     }
 
+    
     public List<File> getFilesByPostId(Integer postId) {
         return fileRepository.findByPostId(postId);
+    }
+    
+    public void deleteFile(Integer fileId) {
+        Optional<File> optionalFile = fileRepository.findById(fileId);
+        if (optionalFile.isPresent()) {
+            File file = optionalFile.get();
+
+            // 실제 파일 삭제
+            java.io.File actualFile = new java.io.File(uploadDir + file.getSavedName());
+            if (actualFile.exists()) {
+                actualFile.delete();
+            }
+
+            // DB에서 삭제
+            fileRepository.delete(file);
+        }
     }
 }

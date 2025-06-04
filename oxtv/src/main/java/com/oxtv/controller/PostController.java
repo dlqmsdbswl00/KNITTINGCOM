@@ -152,6 +152,9 @@ public class PostController {
 			return "redirect:/posts/" + id + "?error=not_authorized";
 		}
 
+		List<File> fileList = fileService.getFilesByPostId(id);
+		model.addAttribute("fileList", fileList);
+
 		model.addAttribute("post", post);
 		model.addAttribute("loginUser", loginUser);
 		model.addAttribute("isAdmin", loginUser.getRole() == Role.ADMIN);
@@ -163,7 +166,10 @@ public class PostController {
 
 	// updatePost
 	@PostMapping("/{id}/edit")
-	public String updatePost(@PathVariable Integer id, @ModelAttribute Post post, HttpSession session) {
+	public String updatePost(@PathVariable Integer id, @ModelAttribute Post post,
+			@RequestParam(value = "files", required = false) MultipartFile[] files,
+			@RequestParam(value = "deleteFileIds", required = false) List<Integer> deleteFileIds, HttpSession session) {
+
 		User loginUser = (User) session.getAttribute("loginUser");
 		if (loginUser == null) {
 			// 로그인 안 됐으면 원래 요청 URL 저장
@@ -183,12 +189,23 @@ public class PostController {
 			throw new IllegalArgumentException("일반 유저는 공지 작성/수정 불가");
 		}
 
-		// 수정 내용 반영
+		// 기존 게시글 업데이트
 		existingPost.setTitle(post.getTitle());
 		existingPost.setContent(post.getContent());
 		existingPost.setCategory(post.getCategory());
 
+		// 삭제할 파일 처리
+		if (deleteFileIds != null) {
+			for (Integer fileId : deleteFileIds) {
+				fileService.deleteFile(fileId); // 이거 구현 필요
+			}
+		}
+
+		if (files != null && files.length > 0) {
+			fileService.saveFiles(existingPost.getId(), files); // 기존 저장로직 재활용
+		}
 		postService.updatePost(existingPost);
+
 		return "redirect:/posts/" + id;
 	}
 

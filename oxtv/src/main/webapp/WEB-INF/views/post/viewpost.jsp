@@ -72,10 +72,6 @@
 		</c:forEach>
 	</div>
 
-	<c:forEach var="file" items="${fileList}">
-		<p>파일명: ${file.originalName}, URL: ${file.uploadPath}</p>
-	</c:forEach>
-
 
 	<h3>댓글 작성</h3>
 	<form id="commentForm">
