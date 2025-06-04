@@ -21,18 +21,22 @@ import lombok.Setter;
 @Entity
 @Table(name = "file")
 public class File {
-	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private int id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id", nullable = false)
-    private Post post;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "post_id", nullable = false)
+	private Post post;
 
-    private String originalName;
-    private String savedName;
-    private String uploadPath;
+	private String originalName;
+	private String savedName;
+	private String uploadPath;
 
-    @Column(name = "upload_date")
-    private LocalDateTime uploadDate;
+	@Column(name = "upload_date")
+	private LocalDateTime uploadDate;
+
+	@Column(name = "saved_path")
+	private String savedPath;
 
 }

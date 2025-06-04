@@ -59,6 +59,9 @@ public class FileService {
         }
     }
 
+    public Optional<File> getFileById(Integer fileId) {
+        return fileRepository.findById(fileId);
+    }
     
     public List<File> getFilesByPostId(Integer postId) {
         return fileRepository.findByPostId(postId);
