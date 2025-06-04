@@ -197,7 +197,7 @@ public class PostController {
 		// 삭제할 파일 처리
 		if (deleteFileIds != null) {
 			for (Integer fileId : deleteFileIds) {
-				fileService.deleteFile(fileId); // 이거 구현 필요
+				fileService.deleteFile(fileId); 
 			}
 		}
 

@@ -11,6 +11,16 @@
 	<%@ include file="/WEB-INF/views/common/header.jsp"%>
 	<h2>${post.category}</h2>
 	<h2>${post.title}</h2>
+
+	<c:if test="${not empty fileList}">
+		<h4>첨부파일</h4>
+		<ul>
+			<c:forEach var="file" items="${fileList}">
+				<li><a href="/file/download?fileId=${file.id}" download>${file.originalName}</a></li>
+			</c:forEach>
+		</ul>
+	</c:if>
+
 	<p>
 		<strong>작성자:</strong> ${post.user.nickname}
 	</p>
@@ -23,17 +33,12 @@
 	<p>${post.content}</p>
 
 	<c:forEach var="file" items="${fileList}">
-		<c:choose>
-			<c:when test="${fn:endsWith(file.originalName, '.png') 
-                        || fn:endsWith(file.originalName, '.jpg') 
-                        || fn:endsWith(file.originalName, '.jpeg') 
-                        || fn:endsWith(file.originalName, '.gif')}">
-				<img src="${file.uploadPath}" style="max-width: 400px;" />
-			</c:when>
-			<c:otherwise>
-				<a href="${file.uploadPath}" download>${file.originalName}</a>
-			</c:otherwise>
-		</c:choose>
+		<c:if test="${fn:endsWith(file.originalName, '.png') 
+               || fn:endsWith(file.originalName, '.jpg') 
+               || fn:endsWith(file.originalName, '.jpeg') 
+               || fn:endsWith(file.originalName, '.gif')}">
+			<img src="${file.uploadPath}" style="max-width: 400px; display: block; margin: 10px 0;" />
+		</c:if>
 	</c:forEach>
 
 	<hr>
