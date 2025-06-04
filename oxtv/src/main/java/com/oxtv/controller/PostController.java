@@ -1,10 +1,14 @@
 package com.oxtv.controller;
 
+import com.oxtv.model.Category;
 import com.oxtv.model.Post;
 import com.oxtv.model.Role;
 import com.oxtv.model.User;
 import com.oxtv.service.PostService;
 import com.oxtv.repository.UserRepository;
+
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.servlet.http.HttpSession;
 
 import java.time.format.DateTimeFormatter;
@@ -56,6 +60,7 @@ public class PostController {
 	@GetMapping("/new")
 	public String showPostForm(HttpSession session, Model model) {
 		User loginUser = (User) session.getAttribute("loginUser");
+
 		if (loginUser == null) {
 			return "redirect:/login";
 		}
@@ -75,15 +80,21 @@ public class PostController {
 	public String createPost(@RequestParam String title, @RequestParam String content, @RequestParam String category,
 			@SessionAttribute("loginUser") User loginUser) {
 
-		// 관리자 아니면 공지 못 쓰게 방어
-		if (!loginUser.getRole().equals(Role.ADMIN) && category.equals("공지")) {
-			category = "자유"; // 또는 에러 처리
+		Category categoryEnum = Category.valueOf(category);
+
+		if (loginUser.getRole() == Role.USER && categoryEnum == Category.공지) {
+			throw new IllegalArgumentException("일반 유저는 공지 작성 불가");
 		}
 
+		if (loginUser.getRole() == Role.ADMIN && categoryEnum != Category.공지) {
+			throw new IllegalArgumentException("관리자는 공지만 작성 가능");
+		}
+
+		// 게시글 작성
 		Post post = new Post();
 		post.setTitle(title);
 		post.setContent(content);
-		post.setCategory(category);
+		post.setCategory(categoryEnum);
 		post.setUser(loginUser);
 
 		postService.createPost(post);
@@ -112,20 +123,12 @@ public class PostController {
 	@GetMapping("/{id}/edit")
 	public String editPostForm(@PathVariable Integer id, HttpSession session, Model model) {
 		User loginUser = (User) session.getAttribute("loginUser");
-		model.addAttribute("loginUser", loginUser);
-
-		boolean isAdmin = loginUser != null && loginUser.getRole() == Role.ADMIN;
-		model.addAttribute("isAdmin", isAdmin);
 
 		if (loginUser == null) {
 			// 로그인 안 됐으면 원래 요청 URL 저장
 			session.setAttribute("redirectAfterLogin", "/posts/" + id + "/edit");
 			return "redirect:/login";
 		}
-		model.addAttribute("loginUser", loginUser);
-		model.addAttribute("isAdmin", loginUser.getRole() == Role.ADMIN);
-		model.addAttribute("roleName", loginUser.getRole().name());
-		model.addAttribute("roleClassName", loginUser.getRole().getClass().getName());
 
 		Post post = postService.getPostById(id).orElseThrow(() -> new IllegalArgumentException("게시글 없음"));
 
@@ -136,6 +139,11 @@ public class PostController {
 		}
 
 		model.addAttribute("post", post);
+		model.addAttribute("loginUser", loginUser);
+		model.addAttribute("isAdmin", loginUser.getRole() == Role.ADMIN);
+		model.addAttribute("roleName", loginUser.getRole().name());
+		model.addAttribute("roleClassName", loginUser.getRole().getClass().getName());
+
 		return "post/editpost"; // 권한 있으면 수정 페이지로 감
 	}
 
@@ -154,7 +162,14 @@ public class PostController {
 			return "redirect:/posts/" + id + "?error=not_authorized";
 		}
 
-		// 댓글 유지하고, 수정할 필드만 바꿔주기
+		// 관리자: 공지만 가능 / 일반유저: 공지 못 씀
+		if (loginUser.getRole() == Role.ADMIN && post.getCategory() != Category.공지) {
+			throw new IllegalArgumentException("관리자는 공지만 작성/수정 가능");
+		} else if (loginUser.getRole() == Role.USER && post.getCategory() == Category.공지) {
+			throw new IllegalArgumentException("일반 유저는 공지 작성/수정 불가");
+		}
+		
+		// 수정 내용 반영
 		existingPost.setTitle(post.getTitle());
 		existingPost.setContent(post.getContent());
 		existingPost.setCategory(post.getCategory());
