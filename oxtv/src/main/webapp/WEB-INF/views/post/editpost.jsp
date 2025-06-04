@@ -13,7 +13,7 @@
 
 	<form method="post" action="/posts/${post.id}/edit">
 
-    <br>카테고리:
+		<br>카테고리:
 		<select name="category" required>
 			<option value="도안" ${post.category == '도안' ? 'selected' : ''}>도안</option>
 			<option value="자유" ${post.category == '자유' ? 'selected' : ''}>자유</option>
@@ -30,10 +30,7 @@
 		<button type="submit">수정</button>
 
 	</form>
-	<button type="submit">수정</button>
-	<form method="post" action="/posts/${post.id}/delete"
-		style="display: inline;"
-	>
+	<form method="post" action="/posts/${post.id}/delete" style="display: inline;">
 		<button type="submit" onclick="return confirm('게시글을 삭제할까요?')">삭제</button>
 	</form>
 

@@ -75,9 +75,9 @@ public class PostController {
 	public String createPost(@RequestParam String title, @RequestParam String content, @RequestParam String category,
 			@SessionAttribute("loginUser") User loginUser) {
 
-// 관리자 아니면 공지 못 쓰게 방어
-		if (!loginUser.getRole().equals(Role.ADMIN) && category.equals("NOTICE")) {
-			category = "FREE"; // 또는 에러 처리
+		// 관리자 아니면 공지 못 쓰게 방어
+		if (!loginUser.getRole().equals(Role.ADMIN) && category.equals("공지")) {
+			category = "자유"; // 또는 에러 처리
 		}
 
 		Post post = new Post();
@@ -122,6 +122,10 @@ public class PostController {
 			session.setAttribute("redirectAfterLogin", "/posts/" + id + "/edit");
 			return "redirect:/login";
 		}
+		model.addAttribute("loginUser", loginUser);
+		model.addAttribute("isAdmin", loginUser.getRole() == Role.ADMIN);
+		model.addAttribute("roleName", loginUser.getRole().name());
+		model.addAttribute("roleClassName", loginUser.getRole().getClass().getName());
 
 		Post post = postService.getPostById(id).orElseThrow(() -> new IllegalArgumentException("게시글 없음"));
 
