@@ -44,7 +44,7 @@ public class PostController {
 
 	@GetMapping
 	public String listPosts(@RequestParam(value = "keyword", required = false) String keyword,
-			@RequestParam(value = "page", defaultValue = "0") int page, Model model) {
+			@RequestParam(value = "page", defaultValue = "0") int page, HttpSession session, Model model) {
 		int pageSize = 10;
 		Pageable pageable = PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "id"));
 
@@ -58,6 +58,10 @@ public class PostController {
 		model.addAttribute("currentPage", page);
 		model.addAttribute("totalPages", postsPage.getTotalPages());
 		model.addAttribute("keyword", keyword);
+
+		User loginUser = (User) session.getAttribute("loginUser");
+		boolean isAdmin = loginUser != null && loginUser.getRole() == Role.ADMIN;
+		model.addAttribute("isAdmin", isAdmin);
 
 		return "post/postlist";
 	}
@@ -197,7 +201,7 @@ public class PostController {
 		// 삭제할 파일 처리
 		if (deleteFileIds != null) {
 			for (Integer fileId : deleteFileIds) {
-				fileService.deleteFile(fileId); 
+				fileService.deleteFile(fileId);
 			}
 		}
 
@@ -225,13 +229,47 @@ public class PostController {
 		postService.deletePost(id);
 		return "redirect:/posts";
 	}
-	
-	
-	@GetMapping("/notice")
-	public String noticePage(Model model) {
-	    List<Post> notices = postService.getPostsByCategory(Category.공지);
-	    model.addAttribute("posts", notices);
-	    return "post/notice"; // 공지 전용 JSP
+
+	// 관리자 기능
+
+//	@GetMapping("/notice")
+//	public String noticePage(Model model) {
+//	    List<Post> notices = postService.getPostsByCategory(Category.공지);
+//	    model.addAttribute("posts", notices);
+//	    return "post/notice"; // 공지 전용 JSP
+//	}
+
+	@PostMapping("/delete")
+	@ResponseBody
+	public Map<String, Object> deletePosts(@RequestParam List<Integer> postIds, HttpSession session) {
+		User loginUser = (User) session.getAttribute("loginUser");
+		Map<String, Object> response = new HashMap<>();
+
+		if (loginUser == null) {
+			response.put("success", false);
+			response.put("message", "로그인이 필요합니다.");
+			return response;
+		}
+
+		try {
+			for (Integer postId : postIds) {
+				Post existingPost = postService.getPostById(postId)
+						.orElseThrow(() -> new IllegalArgumentException("게시글 없음: " + postId));
+
+				// 작성자 아니면 건너뜀 (선택 삭제니까 권한 없으면 무시해도 됨)
+				if (!existingPost.getUser().getUserId().equals(loginUser.getUserId())) {
+					continue;
+				}
+
+				postService.deletePost(postId);
+			}
+			response.put("success", true);
+			response.put("message", "선택한 게시글을 삭제했습니다.");
+		} catch (Exception e) {
+			response.put("success", false);
+			response.put("message", "삭제 중 오류 발생: " + e.getMessage());
+		}
+		return response;
 	}
 
 }
