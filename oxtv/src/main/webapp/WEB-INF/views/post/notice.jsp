@@ -5,18 +5,22 @@
 
 <html>
 <head>
-<title>게시글 목록</title>
+<title>공지사항</title>
 </head>
 <body>
 	<%@ include file="/WEB-INF/views/common/header.jsp"%>
 
-	<h2>게시글 목록</h2>
+	<h2>공지사항</h2>
 	<form action="/posts" method="get">
 		<input type="text" name="keyword" placeholder="검색어 입력" value="${param.keyword}" />
 		<button type="submit">검색</button>
 	</form>
 
-	<a href="/posts/new">게시글 작성</a>
+	<c:if test="${isAdmin}">
+		<a href="/posts/new">공지작성</a>
+	</c:if>
+
+
 	<table border="1">
 		<thead>
 			<tr>
@@ -41,7 +45,8 @@
 
 					<!-- 제목 하이라이트 적용 -->
 					<td>
-						<a href="/posts/${post.id}"> <c:out value="${fnx:highlight(post.title, param.keyword)}" escapeXml="false" />
+						<a href="/posts/${post.id}">
+							<c:out value="${fnx:highlight(post.title, param.keyword)}" escapeXml="false" />
 						</a>
 					</td>
 
@@ -62,11 +67,12 @@
 	</c:if>
 
 	<c:if test="${postsPage.hasPrevious()}">
-		<a href="/posts?page=${postsPage.number - 1}&keyword=${param.keyword}">이전</a>
+		<a href="/posts/notice?page=${postsPage.number - 1}&keyword=${param.keyword}&category=공지">이전</a>
 	</c:if>
 	<c:if test="${postsPage.hasNext()}">
-		<a href="/posts?page=${postsPage.number + 1}&keyword=${param.keyword}">다음</a>
+		<a href="/posts/notice?page=${postsPage.number + 1}&keyword=${param.keyword}&category=공지">다음</a>
 	</c:if>
+
 
 
 </body>

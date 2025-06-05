@@ -52,39 +52,43 @@
 	<hr>
 	<hr>
 
-	<h3>댓글 목록</h3>
-	<div id="comments">
-		<c:forEach var="comment" items="${post.comments}">
-			<div class="comment" data-id="${comment.id}">
-				<strong>${comment.user.nickname}</strong>
+	<c:if test="${post.category != '공지'}">
+		<h3>댓글 목록</h3>
+		<div id="comments">
+			<c:forEach var="comment" items="${post.comments}">
+				<div class="comment" data-id="${comment.id}">
+					<strong>${comment.user.nickname}</strong>
 
-				<c:if test="${comment.updatedAt != null && comment.updatedAt ne comment.createdAt}">
-					<small style="color: gray;">(수정됨)</small>
-				</c:if>
+					<c:if test="${comment.updatedAt != null && comment.updatedAt ne comment.createdAt}">
+						<small style="color: gray;">(수정됨)</small>
+					</c:if>
 
-				<p class="comment-content">${comment.content}</p>
-				<c:if test="${sessionScope.loginUser != null && sessionScope.loginUser.id == comment.user.id}">
-					<button class="edit-btn">수정</button>
-					<button class="delete-btn">삭제</button>
-				</c:if>
-				<div class="edit-form" style="display: none;">
-					<textarea>${comment.content}</textarea>
-					<button class="submit-edit">저장</button>
-					<button class="cancel-edit">취소</button>
+					<p class="comment-content">${comment.content}</p>
+					<c:if test="${sessionScope.loginUser != null && sessionScope.loginUser.id == comment.user.id}">
+						<button class="edit-btn">수정</button>
+						<button class="delete-btn">삭제</button>
+					</c:if>
+					<div class="edit-form" style="display: none;">
+						<textarea>${comment.content}</textarea>
+						<button class="submit-edit">저장</button>
+						<button class="cancel-edit">취소</button>
+					</div>
 				</div>
-			</div>
-			<hr>
-		</c:forEach>
-	</div>
+				<hr>
+			</c:forEach>
+		</div>
 
 
-	<h3>댓글 작성</h3>
-	<form id="commentForm">
-		<input type="hidden" id="postId" value="${post.id}" />
-		<textarea id="commentContent" required></textarea>
-		<br>
-		<button type="submit">작성</button>
-	</form>
+		<h3>댓글 작성</h3>
+		<form id="commentForm">
+			<input type="hidden" id="postId" value="${post.id}" />
+			<textarea id="commentContent" required></textarea>
+			<br>
+			<button type="submit">작성</button>
+		</form>
+	</c:if>
+
+
 
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 	<script src="/js/comment.js"></script>

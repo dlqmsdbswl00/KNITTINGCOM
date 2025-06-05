@@ -7,6 +7,7 @@ import com.oxtv.model.Role;
 import com.oxtv.model.User;
 import com.oxtv.service.FileService;
 import com.oxtv.service.PostService;
+import com.oxtv.util.FnUtils;
 import com.oxtv.repository.UserRepository;
 
 import jakarta.persistence.EnumType;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -42,14 +44,30 @@ public class PostController {
 		this.fileService = fileService;
 	}
 
+	@Autowired
+	private HttpSession session;
+
+	private boolean isAdmin() {
+		User loginUser = (User) session.getAttribute("loginUser");
+		return loginUser != null && loginUser.getRole() == Role.ADMIN;
+	}
+
 	@GetMapping
 	public String listPosts(@RequestParam(value = "keyword", required = false) String keyword,
-			@RequestParam(value = "page", defaultValue = "0") int page, Model model) {
+			@RequestParam(value = "page", defaultValue = "0") int page, HttpSession session, Model model) {
 		int pageSize = 10;
 		Pageable pageable = PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "id"));
 
-		Page<Post> postsPage = (keyword == null || keyword.trim().isEmpty()) ? postService.getPostsPage(pageable)
-				: postService.searchPosts(keyword, pageable);
+		Page<Post> postsPage;
+
+		if (keyword == null || keyword.trim().isEmpty()) {
+		    // 공지 제외 일반 게시글 목록
+		    postsPage = postService.findByCategoryNotOrderByCreatedAtDesc(Category.공지, pageable);
+		} else {
+		    // 키워드로 검색된 일반 게시글 목록 (공지 제외 조건도 넣어야 함)
+		    postsPage = postService.searchPostsExcludeNotice(keyword, pageable);
+		}
+;
 
 		postsPage.getContent().forEach(post -> post.getUser().getNickname()); // Lazy 로딩 대비
 
@@ -58,6 +76,10 @@ public class PostController {
 		model.addAttribute("currentPage", page);
 		model.addAttribute("totalPages", postsPage.getTotalPages());
 		model.addAttribute("keyword", keyword);
+
+		User loginUser = (User) session.getAttribute("loginUser");
+		boolean isAdmin = loginUser != null && loginUser.getRole() == Role.ADMIN;
+		model.addAttribute("isAdmin", isAdmin);
 
 		return "post/postlist";
 	}
@@ -108,7 +130,11 @@ public class PostController {
 			fileService.saveFiles(post.getId(), files); // 파일 저장
 		}
 
-		return "redirect:/posts";
+		if (post.getCategory() == Category.공지) {
+			return "redirect:/posts/notice"; // ← 공지면 공지 목록으로
+		} else {
+			return "redirect:/posts"; // ← 일반글이면 일반 게시판
+		}
 	}
 
 	@GetMapping("/{id}")
@@ -197,7 +223,7 @@ public class PostController {
 		// 삭제할 파일 처리
 		if (deleteFileIds != null) {
 			for (Integer fileId : deleteFileIds) {
-				fileService.deleteFile(fileId); 
+				fileService.deleteFile(fileId);
 			}
 		}
 
@@ -225,4 +251,58 @@ public class PostController {
 		postService.deletePost(id);
 		return "redirect:/posts";
 	}
+
+	// 관리자 기능
+
+	@GetMapping("/notice")
+	public String listNotices(@RequestParam(defaultValue = "") String keyword,
+			@RequestParam(defaultValue = "0") int page, Model model, HttpSession session) {
+		Pageable pageable = PageRequest.of(page, 10, Sort.by("createdAt").descending());
+		Category category = Category.공지;
+
+		Page<Post> postsPage;
+		if (keyword.isEmpty()) {
+			postsPage = postService.findByCategory(category, pageable);
+		} else {
+			postsPage = postService.findByCategoryAndTitleContaining(category, keyword, pageable);
+		}
+
+		model.addAttribute("postsPage", postsPage);
+		model.addAttribute("isAdmin", FnUtils.isAdmin(session));
+		return "post/notice";
+	}
+
+	@PostMapping("/delete")
+	@ResponseBody
+	public Map<String, Object> deletePosts(@RequestParam List<Integer> postIds, HttpSession session) {
+		User loginUser = (User) session.getAttribute("loginUser");
+		Map<String, Object> response = new HashMap<>();
+
+		if (loginUser == null) {
+			response.put("success", false);
+			response.put("message", "로그인이 필요합니다.");
+			return response;
+		}
+
+		try {
+			for (Integer postId : postIds) {
+				Post existingPost = postService.getPostById(postId)
+						.orElseThrow(() -> new IllegalArgumentException("게시글 없음: " + postId));
+
+				// 작성자 아니면 건너뜀 (선택 삭제니까 권한 없으면 무시해도 됨)
+				if (!existingPost.getUser().getUserId().equals(loginUser.getUserId())) {
+					continue;
+				}
+
+				postService.deletePost(postId);
+			}
+			response.put("success", true);
+			response.put("message", "선택한 게시글을 삭제했습니다.");
+		} catch (Exception e) {
+			response.put("success", false);
+			response.put("message", "삭제 중 오류 발생: " + e.getMessage());
+		}
+		return response;
+	}
+
 }

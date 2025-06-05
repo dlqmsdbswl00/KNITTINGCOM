@@ -17,12 +17,17 @@
 
 		<br>카테고리:
 		<select name="category" required>
-			<option value="도안">도안</option>
-			<option value="자유">자유</option>
-			<option value="질문">질문</option>
-			<c:if test="${isAdmin}">
-				<option value="공지">공지</option>
-			</c:if>
+
+			<c:choose>
+				<c:when test="${isAdmin}">
+					<option value="공지">공지</option>
+				</c:when>
+				<c:otherwise>
+					<option value="도안">도안</option>
+					<option value="자유">자유</option>
+					<option value="질문">질문</option>
+				</c:otherwise>
+			</c:choose>
 		</select>
 		<br> 제목:
 		<input type="text" name="title" required>
