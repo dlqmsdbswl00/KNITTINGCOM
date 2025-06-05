@@ -3,7 +3,7 @@
 <header>
 	<nav id="main-nav">
 		<c:set var="loginUser" value="${sessionScope.loginUser}" />
-		<a href="/">홈</a> <a href="/posts">게시판</a> <a href="/posts/notice">공지사항</a>
+		<a href="/">홈</a> <a href="/posts">게시판</a> <a href="/posts/notice">공지사항</a> <a href="/tutorials">뜨개 튜토리얼</a>
 
 		<c:choose>
 			<c:when test="${not empty loginUser}">
@@ -16,8 +16,7 @@
 				<a href="/login">로그인</a>
 			</c:otherwise>
 		</c:choose>
-		<%-- 		<c:out value="${sessionScope.loginUser}" default="세션없음" />
- --%>
+
 		<p>디버깅용: ${loginUser}</p>
 	</nav>
 </header>
