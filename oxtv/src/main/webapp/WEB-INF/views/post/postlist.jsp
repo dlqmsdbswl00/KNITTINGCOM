@@ -12,9 +12,15 @@
 
 	<h2>게시글 목록</h2>
 	<form action="/posts" method="get">
+		<select name="searchType">
+			<option value="title" ${param.searchType == 'title' ? 'selected' : ''}>제목</option>
+			<option value="nickname" ${param.searchType == 'nickname' ? 'selected' : ''}>작성자</option>
+			<option value="category" ${param.searchType == 'category' ? 'selected' : ''}>카테고리</option>
+		</select>
 		<input type="text" name="keyword" placeholder="검색어 입력" value="${param.keyword}" />
 		<button type="submit">검색</button>
 	</form>
+
 
 	<a href="/posts/new">게시글 작성</a>
 	<table border="1">
@@ -41,7 +47,8 @@
 
 					<!-- 제목 하이라이트 적용 -->
 					<td>
-						<a href="/posts/${post.id}"> <c:out value="${fnx:highlight(post.title, param.keyword)}" escapeXml="false" />
+						<a href="/posts/${post.id}">
+							<c:out value="${fnx:highlight(post.title, param.keyword)}" escapeXml="false" />
 						</a>
 					</td>
 

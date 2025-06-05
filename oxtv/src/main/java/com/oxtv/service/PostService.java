@@ -50,31 +50,32 @@ public class PostService {
 	}
 
 	public Page<Post> getPostsPage(Pageable pageable) {
-	    return postRepository.findAll(pageable);
+		return postRepository.findAll(pageable);
 	}
 
 	public Page<Post> searchPosts(String keyword, Pageable pageable) {
-	    return postRepository
-	        .findByTitleContainingIgnoreCaseOrUser_NicknameContainingIgnoreCaseOrContentContainingIgnoreCase(
-	            keyword, keyword, keyword, pageable);
+		return postRepository
+				.findByTitleContainingIgnoreCaseOrUser_NicknameContainingIgnoreCaseOrContentContainingIgnoreCase(
+						keyword, keyword, keyword, pageable);
 	}
 
-	public List<Post> findNotices(String keyword) {
-	    if (keyword == null || keyword.isEmpty()) {
-	        return postRepository.findByCategory(Category.공지);
-	    } else {
-	        return postRepository.findByCategoryAndTitleContaining(Category.공지, keyword);
-	    }
+	public Page<Post> findNotices(String keyword, Pageable pageable) {
+		if (keyword == null || keyword.isEmpty()) {
+			return postRepository.findByCategory(Category.공지, pageable);
+		} else {
+			return postRepository.findByCategoryAndTitleContaining(Category.공지, keyword, pageable);
+		}
 	}
-	
+
+
 	public List<Post> getNoticePosts() {
-	    return postRepository.findByCategory(Category.공지);
+		return postRepository.findByCategory(Category.공지);
 	}
 
-	public List<Post> searchNoticePosts(String keyword) {
-	    return postRepository.findByCategoryAndTitleContaining(Category.공지, keyword);
+	public Page<Post> searchNoticePosts(String keyword, Pageable pageable) {
+		return postRepository.findByCategoryAndTitleContainingIgnoreCase(Category.공지, keyword, pageable);
 	}
-	
+
 	public Page<Post> findByCategory(Category category, Pageable pageable) {
 	    return postRepository.findByCategory(category, pageable);
 	}
@@ -83,15 +84,29 @@ public class PostService {
 	    return postRepository.findByCategoryAndTitleContaining(category, keyword, pageable);
 	}
 
+
 	public Page<Post> findByCategoryNotOrderByCreatedAtDesc(Category category, Pageable pageable) {
-	    return postRepository.findByCategoryNotOrderByCreatedAtDesc(category, pageable);
+		return postRepository.findByCategoryNotOrderByCreatedAtDesc(category, pageable);
 	}
 
-	public Page<Post> searchPostsExcludeNotice(String keyword, Pageable pageable) {
-	    return postRepository.findByCategoryNotAndTitleContainingIgnoreCase(Category.공지, keyword, pageable);
+	public Page<Post> searchPostsExcludeNotice(String keyword, String searchType, Pageable pageable) {
+		switch (searchType) {
+		case "nickname":
+			return postRepository.findByUser_NicknameContainingIgnoreCaseAndCategoryNot(keyword, Category.공지, pageable);
+		case "category":
+			try {
+				Category category = Category.valueOf(keyword);
+				if (category == Category.공지) {
+					return Page.empty(); // 공지 제외니까 빈 결과
+				}
+				return postRepository.findByCategory(category, pageable);
+			} catch (IllegalArgumentException e) {
+				return Page.empty(); // 잘못된 카테고리명
+			}
+		case "title":
+		default:
+			return postRepository.findByTitleContainingIgnoreCaseAndCategoryNot(keyword, Category.공지, pageable);
+		}
 	}
-
-
-
 
 }
