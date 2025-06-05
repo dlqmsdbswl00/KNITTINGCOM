@@ -58,8 +58,16 @@ public class PostController {
 		int pageSize = 10;
 		Pageable pageable = PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "id"));
 
-		Page<Post> postsPage = (keyword == null || keyword.trim().isEmpty()) ? postService.getPostsPage(pageable)
-				: postService.searchPosts(keyword, pageable);
+		Page<Post> postsPage;
+
+		if (keyword == null || keyword.trim().isEmpty()) {
+		    // 공지 제외 일반 게시글 목록
+		    postsPage = postService.findByCategoryNotOrderByCreatedAtDesc(Category.공지, pageable);
+		} else {
+		    // 키워드로 검색된 일반 게시글 목록 (공지 제외 조건도 넣어야 함)
+		    postsPage = postService.searchPostsExcludeNotice(keyword, pageable);
+		}
+;
 
 		postsPage.getContent().forEach(post -> post.getUser().getNickname()); // Lazy 로딩 대비
 

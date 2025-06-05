@@ -15,7 +15,9 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
 	long countByUser(User user);
 
 	// 최신순 페이징 조회 메서드 추가
-	Page<Post> findAllByOrderByCreatedAtDesc(Pageable pageable);
+	Page<Post> findByCategoryNotOrderByCreatedAtDesc(Category category, Pageable pageable);
+
+    Page<Post> findByCategoryNotAndTitleContainingIgnoreCase(Category category, String keyword, Pageable pageable);
 
 	Page<Post> findByTitleContainingIgnoreCaseOrUser_NicknameContainingIgnoreCaseOrContentContainingIgnoreCase(
 			String title, String nickname, String content, Pageable pageable);
@@ -31,6 +33,9 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
     Page<Post> findByCategory(Category category, Pageable pageable);
 
     Page<Post> findByCategoryAndTitleContaining(Category category, String keyword, Pageable pageable);
+
+    //test
+    long countByUserAndCategory(User user, Category category);
 
 }
 

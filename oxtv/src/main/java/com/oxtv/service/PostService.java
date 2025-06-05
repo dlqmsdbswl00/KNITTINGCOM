@@ -83,6 +83,15 @@ public class PostService {
 	    return postRepository.findByCategoryAndTitleContaining(category, keyword, pageable);
 	}
 
+	public Page<Post> findByCategoryNotOrderByCreatedAtDesc(Category category, Pageable pageable) {
+	    return postRepository.findByCategoryNotOrderByCreatedAtDesc(category, pageable);
+	}
+
+	public Page<Post> searchPostsExcludeNotice(String keyword, Pageable pageable) {
+	    return postRepository.findByCategoryNotAndTitleContainingIgnoreCase(Category.공지, keyword, pageable);
+	}
+
+
 
 
 }
