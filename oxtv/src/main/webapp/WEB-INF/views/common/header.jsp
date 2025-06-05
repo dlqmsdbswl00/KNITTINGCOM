@@ -10,6 +10,7 @@
 		<c:choose>
 			<c:when test="${not empty loginUser}">
 				<span>${loginUser.nickname} 님 환영합니다!</span>
+				<a href="/mypage">마이페이지</a>
 				<a href="/logout">로그아웃</a>
 			</c:when>
 			<c:otherwise>

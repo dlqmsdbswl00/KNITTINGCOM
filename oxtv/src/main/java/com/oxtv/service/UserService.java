@@ -52,4 +52,15 @@ public class UserService {
         return user;
     }
 
+    public void updateUserInfo(User updatedUser) {
+        User user = userRepository.findById(updatedUser.getId())
+                                  .orElseThrow(() -> new RuntimeException("사용자 없음"));
+
+        user.setEmail(updatedUser.getEmail());
+        user.setNickname(updatedUser.getNickname());
+        user.setUserPassword(passwordEncoder.encode(updatedUser.getUserPassword()));
+
+        userRepository.save(user);
+    }
+
 }
