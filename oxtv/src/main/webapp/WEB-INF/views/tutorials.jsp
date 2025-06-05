@@ -18,7 +18,7 @@
 }
 
 .tutorial-item {
-	width: 220px; /* 썸네일 + 제목 넣을 공간 */
+	width: 220px;
 	text-align: center;
 }
 
@@ -28,157 +28,116 @@
 	display: block;
 	margin: 10px 0;
 }
-
-.modal {
-	display: none;
-	position: fixed;
-	z-index: 9999;
-	left: 0;
-	top: 0;
-	width: 100%;
-	height: 100%;
-	background-color: rgba(0, 0, 0, 0.7);
-}
-
-.modal-content {
-	position: relative;
-	background: #fff;
-	width: 600px;
-	margin: 10% auto;
-	padding: 20px;
-	text-align: center;
-}
-
-.close {
-	position: absolute;
-	top: 5px;
-	right: 10px;
-	font-size: 25px;
-	cursor: pointer;
-}
 </style>
 </head>
 <body>
 	<%@ include file="/WEB-INF/views/common/header.jsp"%>
 	<h2>뜨개질 튜토리얼 🎥</h2>
-
+	<p>사진을 클릭하면 해당 튜토리얼 영상으로 이동합니다</p>
 	<div id="tutorial-container"></div>
 
-	<!-- 모달 영역 추가 -->
-	<div id="video-modal" class="modal">
-		<div class="modal-content">
-			<span class="close">&times;</span>
-			<iframe id="youtube-frame" width="560" height="315" frameborder="0" allowfullscreen></iframe>
-		</div>
-	</div>
-
 	<script>
-		console.log("🔥 tutorials.js loaded");
+	console.log("🔥 tutorials.js loaded");
 
-	    // 유튜브 영상 ID 추출
-	   function extractVideoId(url) {
+	// 유튜브 영상 ID 추출
+	function extractVideoId(url) {
 	    try {
 	        const parsedUrl = new URL(url);
-	        if (parsedUrl.hostname === 'youtu.be') {
-	            // 도메인 바로 다음 경로가 영상ID
-	            return parsedUrl.pathname.slice(1); // '/' 떼고 반환
+	        const hostname = parsedUrl.hostname;
+	        
+	        if (hostname === 'youtu.be') {
+	            return parsedUrl.pathname.replace('/', '');
 	        }
-	        // 일반 유튜브 URL은 v 파라미터로 뽑기
-	        return parsedUrl.searchParams.get('v');
+
+	        if (hostname.includes('youtube.com')) {
+	            const vParam = parsedUrl.searchParams.get('v');
+	            if (vParam) return vParam;
+
+	            const pathMatch = parsedUrl.pathname.match(/\/(embed|v)\/([^/?]+)/);
+	            if (pathMatch && pathMatch[2]) return pathMatch[2];
+	        }
+
+	        return null;
 	    } catch (e) {
-	        return null; // URL 형식 이상하면 null
+	        console.error('❌ Invalid URL:', url);
+	        return null;
 	    }
 	}
 
-    // 썸네일 + 제목 + 모달 or 링크
-    function createTutorialItem(item) {
-       
-     	const videoId = extractVideoId(item["링크"]);
-        console.log("원본 링크:", item["링크"]);
-        console.log("추출된 videoId:", videoId);
-        
-        if (!videoId) {
-            console.warn("❌ 잘못된 URL - videoId 없음:", item["링크"]);
-            return null;
-        }
-        
-        const li = document.createElement('li');
-        li.className = 'tutorial-item';
-        
+	// 썸네일 + 제목 + 클릭 시 새창
+	function createTutorialItem(item) {
+	    const url = item["링크"];
+	    console.log("링크:", url);
 
-        const thumbnail = document.createElement('img');
-        thumbnail.src = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
-        thumbnail.className = 'thumbnail';
+	    const videoId = extractVideoId(url);
+	    console.log("videoId:", videoId);
 
-        thumbnail.onerror = function () {
-            this.src = '/img/default-thumbnail.jpg'; // 직접 준비한 기본 이미지 경로
-        };
+	    if (!videoId) {
+	        console.warn("❌ 잘못된 URL - videoId 없음:", item["링크"]);
+	        return null;
+	    }
 
-        const caption = document.createElement('div');
-        caption.textContent = item["제목"];
+	    const li = document.createElement('li');
+	    li.className = 'tutorial-item';
 
-        li.appendChild(thumbnail);
-        li.appendChild(caption);
-        
-        // 모달 재생 or 링크 새창 열기
+	    const thumbnail = document.createElement('img');
+	    thumbnail.src = item["썸네일"];
+	    thumbnail.className = 'thumbnail';
+
+	    thumbnail.onerror = function () {
+	        this.src = '/img/default-thumbnail.jpg'; // 기본 썸네일 경로
+	    };
+
+	    const caption = document.createElement('div');
+	    caption.textContent = item["제목"];
+
+	    // 👉 클릭 시 유튜브 링크 새 창으로
 	    thumbnail.addEventListener('click', () => {
-	        const iframe = document.getElementById('youtube-frame');
-	        iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-	        document.getElementById('video-modal').style.display = 'block';
+	        window.open(url, '_blank');
 	    });
-        return li;
-    }
-	    // 페이지 로드 시 실행
-	    // 모달 닫기
-	    window.addEventListener('DOMContentLoaded', function () {
-	    // 데이터 로드
+
+	    li.appendChild(thumbnail);
+	    li.appendChild(caption);
+
+	    return li;
+	}
+
+	// 페이지 로드 시 실행
+	window.addEventListener('DOMContentLoaded', function () {
 	    fetch('/tutorials/data')
-	        .then(response => response.json())
-	        .then(data => {
-	            const container = document.getElementById('tutorial-container');
-	            for (const category in data) {
-	                const categoryTitle = document.createElement('div');
-	                categoryTitle.className = 'category';
-	                categoryTitle.textContent = category;
-	
-	                const list = document.createElement('ul');
-	                list.className = 'tutorial-list';
-	
-	                data[category].forEach(item => {
-	                    const li = createTutorialItem(item);
-	                    if (li) list.appendChild(li);
-	                });
-	
-	                container.appendChild(categoryTitle);
-	                container.appendChild(list);
-	            }
-	        })
-	        .catch(err => {
-	            console.error('에러 발생:', err);
-	            document.getElementById('tutorial-container').textContent = '데이터를 불러오지 못했습니다.';
+	    .then(res => res.json())
+	    .then(data => {
+	        console.log("🔥 받아온 튜토리얼 데이터:", data);
+	        const container = document.getElementById('tutorial-container');
+	        
+	     	// 출력 순서 지정
+	        const categoryOrder = ["코바늘", "대바늘"];
+	     	
+	        categoryOrder.forEach(category => {
+	            const tutorials = data[category];
+	            if (!tutorials) return;
+
+	            const categoryTitle = document.createElement('div');
+	            categoryTitle.className = 'category';
+	            categoryTitle.textContent = category;
+
+	            const list = document.createElement('ul');
+	            list.className = 'tutorial-list';
+
+	            data[category].forEach(item => {
+	                const li = createTutorialItem(item);
+	                if (li) list.appendChild(li);
+	            });
+
+	            container.appendChild(categoryTitle);
+	            container.appendChild(list);
 	        });
-	
-	    // 모달 닫기 로직
-	    const closeBtn = document.querySelector('.close');
-	    const modal = document.getElementById('video-modal');
-	    const iframe = document.getElementById('youtube-frame');
-	
-	    closeBtn.addEventListener('click', () => {
-	        modal.style.display = 'none';
-	        iframe.src = ''; // 영상 중지용
+	    })
+	    .catch(err => {
+	        console.error('에러 발생:', err);
+	        document.getElementById('tutorial-container').textContent = '데이터를 불러오지 못했습니다.';
 	    });
-	
-	    // ESC로 모달 닫기
-	    window.addEventListener('keydown', (e) => {
-	        if (e.key === 'Escape') {
-	            modal.style.display = 'none';
-	            iframe.src = '';
-        }
-    });
-});
-</script>
-
-
+	});
+	</script>
 </body>
 </html>
-
