@@ -7,6 +7,7 @@ import com.oxtv.model.Role;
 import com.oxtv.model.User;
 import com.oxtv.service.FileService;
 import com.oxtv.service.PostService;
+import com.oxtv.util.FnUtils;
 import com.oxtv.repository.UserRepository;
 
 import jakarta.persistence.EnumType;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -40,6 +42,14 @@ public class PostController {
 		this.postService = postService;
 		this.userRepository = userRepository;
 		this.fileService = fileService;
+	}
+
+	@Autowired
+	private HttpSession session;
+
+	private boolean isAdmin() {
+		User loginUser = (User) session.getAttribute("loginUser");
+		return loginUser != null && loginUser.getRole() == Role.ADMIN;
 	}
 
 	@GetMapping
@@ -112,7 +122,11 @@ public class PostController {
 			fileService.saveFiles(post.getId(), files); // 파일 저장
 		}
 
-		return "redirect:/posts";
+		if (post.getCategory() == Category.공지) {
+			return "redirect:/posts/notice"; // ← 공지면 공지 목록으로
+		} else {
+			return "redirect:/posts"; // ← 일반글이면 일반 게시판
+		}
 	}
 
 	@GetMapping("/{id}")
@@ -232,12 +246,23 @@ public class PostController {
 
 	// 관리자 기능
 
-//	@GetMapping("/notice")
-//	public String noticePage(Model model) {
-//	    List<Post> notices = postService.getPostsByCategory(Category.공지);
-//	    model.addAttribute("posts", notices);
-//	    return "post/notice"; // 공지 전용 JSP
-//	}
+	@GetMapping("/notice")
+	public String listNotices(@RequestParam(defaultValue = "") String keyword,
+			@RequestParam(defaultValue = "0") int page, Model model, HttpSession session) {
+		Pageable pageable = PageRequest.of(page, 10, Sort.by("createdAt").descending());
+		Category category = Category.공지;
+
+		Page<Post> postsPage;
+		if (keyword.isEmpty()) {
+			postsPage = postService.findByCategory(category, pageable);
+		} else {
+			postsPage = postService.findByCategoryAndTitleContaining(category, keyword, pageable);
+		}
+
+		model.addAttribute("postsPage", postsPage);
+		model.addAttribute("isAdmin", FnUtils.isAdmin(session));
+		return "post/notice";
+	}
 
 	@PostMapping("/delete")
 	@ResponseBody

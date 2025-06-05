@@ -2,6 +2,7 @@ package com.oxtv.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import com.oxtv.model.Category;
 import com.oxtv.model.Post;
 import com.oxtv.model.User;
 import org.springframework.data.domain.Page;
@@ -19,4 +20,18 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
 	Page<Post> findByTitleContainingIgnoreCaseOrUser_NicknameContainingIgnoreCaseOrContentContainingIgnoreCase(
 			String title, String nickname, String content, Pageable pageable);
 
+	
+	 // 공지사항 전체 조회
+    List<Post> findByCategory(Category category);
+
+    // 공지사항 중 키워드 포함 제목 조회
+    List<Post> findByCategoryAndTitleContaining(Category category, String keyword);
+
+
+    Page<Post> findByCategory(Category category, Pageable pageable);
+
+    Page<Post> findByCategoryAndTitleContaining(Category category, String keyword, Pageable pageable);
+
 }
+
+

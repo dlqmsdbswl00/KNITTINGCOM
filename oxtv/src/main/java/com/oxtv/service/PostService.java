@@ -1,5 +1,6 @@
 package com.oxtv.service;
 
+import com.oxtv.model.Category;
 import com.oxtv.model.Post;
 import com.oxtv.model.User;
 import com.oxtv.repository.PostRepository;
@@ -57,5 +58,31 @@ public class PostService {
 	        .findByTitleContainingIgnoreCaseOrUser_NicknameContainingIgnoreCaseOrContentContainingIgnoreCase(
 	            keyword, keyword, keyword, pageable);
 	}
+
+	public List<Post> findNotices(String keyword) {
+	    if (keyword == null || keyword.isEmpty()) {
+	        return postRepository.findByCategory(Category.공지);
+	    } else {
+	        return postRepository.findByCategoryAndTitleContaining(Category.공지, keyword);
+	    }
+	}
+	
+	public List<Post> getNoticePosts() {
+	    return postRepository.findByCategory(Category.공지);
+	}
+
+	public List<Post> searchNoticePosts(String keyword) {
+	    return postRepository.findByCategoryAndTitleContaining(Category.공지, keyword);
+	}
+	
+	public Page<Post> findByCategory(Category category, Pageable pageable) {
+	    return postRepository.findByCategory(category, pageable);
+	}
+
+	public Page<Post> findByCategoryAndTitleContaining(Category category, String keyword, Pageable pageable) {
+	    return postRepository.findByCategoryAndTitleContaining(category, keyword, pageable);
+	}
+
+
 
 }
