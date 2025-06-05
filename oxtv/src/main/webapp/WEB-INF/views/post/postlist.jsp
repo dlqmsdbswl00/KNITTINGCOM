@@ -67,6 +67,9 @@
 	<c:if test="${isAdmin}">
 		<button id="deleteSelectedBtn">선택 삭제</button>
 	</c:if>
+	<c:if test="${loginUser.role == 'ADMIN'}">
+		<a href="${pageContext.request.contextPath}/admin/exportPosts" class="btn btn-primary"> 엑셀 다운로드 </a>
+	</c:if>
 
 	<c:if test="${postsPage.hasPrevious()}">
 		<a href="/posts?page=${postsPage.number - 1}&keyword=${param.keyword}">이전</a>

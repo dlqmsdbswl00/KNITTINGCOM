@@ -58,7 +58,7 @@ public class PostController {
 	        @RequestParam(defaultValue = "0") int page, HttpSession session, Model model) {
 		int pageSize = 10;
 	
-		Pageable pageable = PageRequest.of(page, 10, Sort.by("createdAt").descending());
+		Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
 		Page<Post> postsPage = postService.findByCategory(Category.공지, pageable);
 
 		if (keyword == null || keyword.trim().isEmpty()) {
