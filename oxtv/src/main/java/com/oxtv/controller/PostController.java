@@ -225,4 +225,13 @@ public class PostController {
 		postService.deletePost(id);
 		return "redirect:/posts";
 	}
+	
+	
+	@GetMapping("/notice")
+	public String noticePage(Model model) {
+	    List<Post> notices = postService.getPostsByCategory(Category.공지);
+	    model.addAttribute("posts", notices);
+	    return "post/notice"; // 공지 전용 JSP
+	}
+
 }

@@ -1,13 +1,14 @@
 package com.oxtv.service;
 
-import org.springframework.stereotype.Service;
-
 import java.util.Optional;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 import com.oxtv.model.User;
 import com.oxtv.repository.UserRepository;
+
+import jakarta.annotation.PostConstruct;
 
 @Service
 public class UserService {
@@ -19,7 +20,7 @@ public class UserService {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
-
+   
     // 회원가입 처리 (중복 체크 + 암호화 + 저장)
     // 에러 메시지 리턴, 없으면 null 리턴
     public String register(User user) {

@@ -26,6 +26,7 @@
 				<th>제목</th>
 				<th>작성자</th>
 				<th>작성일</th>
+				<input type="checkbox" name="postIds" value="${post.id}">
 			</tr>
 		</thead>
 		<tbody>
