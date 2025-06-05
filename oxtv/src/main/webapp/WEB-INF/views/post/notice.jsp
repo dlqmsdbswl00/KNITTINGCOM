@@ -11,7 +11,7 @@
 	<%@ include file="/WEB-INF/views/common/header.jsp"%>
 
 	<h2>공지사항</h2>
-	<form action="/posts" method="get">
+	<form action="/posts/notice" method="get">
 		<input type="text" name="keyword" placeholder="검색어 입력" value="${param.keyword}" />
 		<button type="submit">검색</button>
 	</form>
@@ -67,10 +67,10 @@
 	</c:if>
 
 	<c:if test="${postsPage.hasPrevious()}">
-		<a href="/posts/notice?page=${postsPage.number - 1}&keyword=${param.keyword}&category=공지">이전</a>
+		<a href="/posts/notice?page=${postsPage.number - 1}&keyword=${param.keyword}">이전</a>
 	</c:if>
 	<c:if test="${postsPage.hasNext()}">
-		<a href="/posts/notice?page=${postsPage.number + 1}&keyword=${param.keyword}&category=공지">다음</a>
+		<a href="/posts/notice?page=${postsPage.number + 1}&keyword=${param.keyword}">다음</a>
 	</c:if>
 
 

@@ -53,19 +53,21 @@ public class PostController {
 	}
 
 	@GetMapping
-	public String listPosts(@RequestParam(value = "keyword", required = false) String keyword,
-			@RequestParam(value = "page", defaultValue = "0") int page, HttpSession session, Model model) {
+	public String listPosts(@RequestParam(required = false) String keyword,
+			@RequestParam(required = false, defaultValue = "title") String searchType,
+	        @RequestParam(defaultValue = "0") int page, HttpSession session, Model model) {
 		int pageSize = 10;
-		Pageable pageable = PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "id"));
-
-		Page<Post> postsPage;
+	
+		Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
+		Page<Post> postsPage = postService.findByCategory(Category.공지, pageable);
 
 		if (keyword == null || keyword.trim().isEmpty()) {
+			
 		    // 공지 제외 일반 게시글 목록
-		    postsPage = postService.findByCategoryNotOrderByCreatedAtDesc(Category.공지, pageable);
+	        postsPage = postService.findByCategoryNotOrderByCreatedAtDesc(Category.공지, pageable);
 		} else {
 		    // 키워드로 검색된 일반 게시글 목록 (공지 제외 조건도 넣어야 함)
-		    postsPage = postService.searchPostsExcludeNotice(keyword, pageable);
+	        postsPage = postService.searchPostsExcludeNotice(keyword.trim(), searchType, pageable);
 		}
 ;
 
@@ -253,24 +255,26 @@ public class PostController {
 	}
 
 	// 관리자 기능
-
 	@GetMapping("/notice")
-	public String listNotices(@RequestParam(defaultValue = "") String keyword,
-			@RequestParam(defaultValue = "0") int page, Model model, HttpSession session) {
-		Pageable pageable = PageRequest.of(page, 10, Sort.by("createdAt").descending());
-		Category category = Category.공지;
+	public String showNoticePosts(@RequestParam(required = false) String keyword,
+	                              @RequestParam(defaultValue = "0") int page,
+	                              Model model, HttpSession session) {
 
-		Page<Post> postsPage;
-		if (keyword.isEmpty()) {
-			postsPage = postService.findByCategory(category, pageable);
-		} else {
-			postsPage = postService.findByCategoryAndTitleContaining(category, keyword, pageable);
-		}
+	    Pageable pageable = PageRequest.of(page, 10, Sort.by("createdAt").descending());
+	    Page<Post> postsPage;
 
-		model.addAttribute("postsPage", postsPage);
-		model.addAttribute("isAdmin", FnUtils.isAdmin(session));
-		return "post/notice";
+	    if (keyword == null || keyword.trim().isEmpty()) {
+	        postsPage = postService.findByCategory(Category.공지, pageable);
+	    } else {
+	        postsPage = postService.findByCategoryAndTitleContaining(Category.공지, keyword.trim(), pageable);
+	    }
+
+	    model.addAttribute("postsPage", postsPage);
+	    model.addAttribute("isAdmin", FnUtils.isAdmin(session));
+	    model.addAttribute("keyword", keyword);
+	    return "post/notice";
 	}
+
 
 	@PostMapping("/delete")
 	@ResponseBody
