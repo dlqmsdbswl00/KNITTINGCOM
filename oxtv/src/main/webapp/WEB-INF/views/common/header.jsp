@@ -18,5 +18,7 @@
 				<a href="/login">로그인</a>
 			</c:otherwise>
 		</c:choose>
+		<c:out value="${sessionScope.loginUser}" default="세션없음" />
+		
 	</nav>
 </header>

@@ -15,13 +15,22 @@
 		<input type="email" name="email" value="${user.email}" />
 		<br /> 닉네임 :
 		<input type="text" name="nickname" value="${user.nickname}" />
-		<br /> 비밀번호:
+		<br /> 기존 비밀번호:
+		<input type="password" name="currentPassword" required />
+		<br /> 새 비밀번호:
 		<input type="password" name="userPassword" />
 		<br /> 비밀번호 확인:
 		<input type="password" name="passwordConfirm" />
 		<br />
-
 		<button type="submit">정보 수정</button>
+
+		<c:if test="${not empty errorMessage}">
+			<p style="color: red;">${errorMessage}</p>
+		</c:if>
+		<c:if test="${not empty successMessage}">
+			<p style="color: green;">${successMessage}</p>
+		</c:if>
+
 	</form>
 
 </body>

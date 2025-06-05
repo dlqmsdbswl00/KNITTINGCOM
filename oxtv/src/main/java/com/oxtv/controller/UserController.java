@@ -1,5 +1,6 @@
 package com.oxtv.controller;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.ui.Model;
@@ -20,8 +21,11 @@ public class UserController {
 
 	private final UserService userService;
 
-	public UserController(UserService userService) {
-		this.userService = userService;
+	private final PasswordEncoder passwordEncoder;
+
+	public UserController(UserService userService, PasswordEncoder passwordEncoder) {
+	    this.userService = userService;
+	    this.passwordEncoder = passwordEncoder;
 	}
 
 	@GetMapping("/signup")
@@ -58,8 +62,10 @@ public class UserController {
 
 	@PostMapping("/mypage/update")
 	public String updateUserInfo(@ModelAttribute("user") User updatedUser,
-			@RequestParam("passwordConfirm") String passwordConfirm, HttpSession session,
-			RedirectAttributes redirectAttrs) {
+            @RequestParam("currentPassword") String currentPassword,
+            @RequestParam("passwordConfirm") String passwordConfirm,
+            HttpSession session,
+            RedirectAttributes redirectAttrs) {
 		User loginUser = (User) session.getAttribute("loginUser");
 
 		// 로그인 여부 + 본인 확인
@@ -67,17 +73,32 @@ public class UserController {
 			return "redirect:/login";
 		}
 
-		// 비밀번호 확인
-		if (!updatedUser.getUserPassword().equals(passwordConfirm)) {
-			redirectAttrs.addFlashAttribute("error", "비밀번호 확인이 일치하지 않습니다.");
-			return "redirect:/mypage";
+		// 기존 비밀번호 확인
+		// ✔ 암호화된 비밀번호와 평문 비교
+		if (!passwordEncoder.matches(currentPassword, loginUser.getUserPassword())) {
+		    redirectAttrs.addFlashAttribute("error", "기존 비밀번호가 일치하지 않습니다.");
+		    return "redirect:/mypage";
 		}
+
+	    // 새 비밀번호가 입력된 경우에만 확인
+	    if (updatedUser.getUserPassword() != null && !updatedUser.getUserPassword().isEmpty()) {
+	        if (!updatedUser.getUserPassword().equals(passwordConfirm)) {
+	            redirectAttrs.addFlashAttribute("error", "새 비밀번호 확인이 일치하지 않습니다.");
+	            return "redirect:/mypage";
+	        }
+	    } else {
+	        // 새 비밀번호가 비어있으면 기존 비밀번호 유지하도록 세팅
+	        updatedUser.setUserPassword(loginUser.getUserPassword());
+	    }
 
 		// 업데이트 처리
 		userService.updateUserInfo(updatedUser);
-		session.setAttribute("loginUser", updatedUser); // 세션 갱신
+		session.setAttribute("loginUser", updatedUser); 
+		
+		// 세션 갱신
+	    session.setAttribute("loginUser", userService.findById(loginUser.getId()));
 
-		redirectAttrs.addFlashAttribute("success", "회원 정보가 수정되었습니다.");
+	    redirectAttrs.addFlashAttribute("successMessage", "정보가 성공적으로 수정되었습니다.");
 		return "redirect:/mypage";
 	}
 }
