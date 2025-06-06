@@ -1,13 +1,17 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+
 
 <!DOCTYPE html>
 <html>
 <head>
 <title>회원가입</title>
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/common.css">
 </head>
 <body>
 	<%@ include file="/WEB-INF/views/common/header.jsp"%>
+
+	<h2>회원가입</h2>
 
 	<form action="/signup" method="post">
 		<input type="text" name="userId" placeholder="아이디" required />

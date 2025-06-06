@@ -1,0 +1,115 @@
+@charset "UTF-8";
+
+/* ===== 공통 색상 변수 ===== */
+:root {
+	--color-bg: #F2F2F2;
+	--color-sub-bg: #EAE4D5;
+	--color-accent: #B6B09F;
+	--color-text: #000000;
+}
+
+/* ===== 폰트 등록 ===== */
+@font-face {
+	font-family: 'CookieRun-Regular';
+	src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/CookieRun-Regular.woff') format('woff');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'omyu_pretty';
+	src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-01@1.0/omyu_pretty.woff2') format('woff2');
+	font-weight: normal;
+	font-style: normal;
+}
+
+/* ===== 전체 기본 세팅 ===== */
+html {
+	box-sizing: border-box;
+}
+
+*,
+*::before,
+*::after {
+	box-sizing: inherit;
+}
+
+body {
+	margin: 0;
+	padding: 24px;
+	background-color: var(--color-bg);
+	font-family: 'omyu_pretty', sans-serif;
+	color: var(--color-text);
+}
+
+/* 제목 공통 스타일 */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	font-family: 'CookieRun-Regular', sans-serif;
+	color: var(--color-text);
+	margin-top: 0;
+}
+
+/* 버튼 공통 스타일 */
+button {
+	font-family: inherit;
+	cursor: pointer;
+	border: none;
+	background-color: var(--color-accent);
+	color: #fff;
+	padding: 8px 16px;
+	border-radius: 8px;
+	transition: background-color 0.3s;
+}
+
+button:hover {
+	background-color: #99927d;
+}
+
+/* 입력 요소 공통 스타일 */
+input,
+textarea,
+select {
+	font-family: inherit;
+	padding: 8px;
+	border: 1px solid #ccc;
+	border-radius: 6px;
+}
+
+
+/*헤더/네비게이션 스타일*/
+header {
+    background-color: var(--color-sub-bg);
+    padding: 16px 24px;
+    font-family: 'CookieRun-Regular', sans-serif;
+    font-size: 18px;
+    border-bottom: 2px solid var(--color-accent);
+}
+
+header a {
+    text-decoration: none;
+}
+
+
+#main-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+#main-nav a {
+    color: var(--color-text);
+    margin-right: 12px;
+    font-weight: bold;
+    transition: color 0.3s;
+}
+
+#main-nav a:hover {
+    color: var(--color-accent);
+}

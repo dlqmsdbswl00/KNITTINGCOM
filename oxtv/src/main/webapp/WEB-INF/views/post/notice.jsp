@@ -2,13 +2,14 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://oxtv.com/functions" prefix="fnx"%>
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/common.css">
 
 <html>
 <head>
 <title>공지사항</title>
+<%@ include file="/WEB-INF/views/common/header.jsp"%>
 </head>
 <body>
-	<%@ include file="/WEB-INF/views/common/header.jsp"%>
 
 	<h2>공지사항</h2>
 	<form action="/posts/notice" method="get">
@@ -45,8 +46,7 @@
 
 					<!-- 제목 하이라이트 적용 -->
 					<td>
-						<a href="/posts/${post.id}">
-							<c:out value="${fnx:highlight(post.title, param.keyword)}" escapeXml="false" />
+						<a href="/posts/${post.id}"> <c:out value="${fnx:highlight(post.title, param.keyword)}" escapeXml="false" />
 						</a>
 					</td>
 

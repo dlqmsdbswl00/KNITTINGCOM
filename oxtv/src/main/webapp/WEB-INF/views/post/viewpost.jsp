@@ -6,9 +6,12 @@
 <html>
 <head>
 <title>게시글 보기</title>
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/common.css">
+
 </head>
 <body>
 	<%@ include file="/WEB-INF/views/common/header.jsp"%>
+
 	<h2>${post.category}</h2>
 	<h2>${post.title}</h2>
 

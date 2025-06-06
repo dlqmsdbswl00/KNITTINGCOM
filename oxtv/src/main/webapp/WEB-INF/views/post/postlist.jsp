@@ -6,6 +6,8 @@
 <html>
 <head>
 <title>게시글 목록</title>
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/common.css">
+
 </head>
 <body>
 	<%@ include file="/WEB-INF/views/common/header.jsp"%>
@@ -47,8 +49,7 @@
 
 					<!-- 제목 하이라이트 적용 -->
 					<td>
-						<a href="/posts/${post.id}">
-							<c:out value="${fnx:highlight(post.title, param.keyword)}" escapeXml="false" />
+						<a href="/posts/${post.id}"> <c:out value="${fnx:highlight(post.title, param.keyword)}" escapeXml="false" />
 						</a>
 					</td>
 

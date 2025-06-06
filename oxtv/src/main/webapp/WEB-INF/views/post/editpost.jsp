@@ -6,6 +6,9 @@
 <html>
 <head>
 <title>게시글 수정</title>
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/common.css">
+
+
 </head>
 <body>
 	<%@ include file="/WEB-INF/views/common/header.jsp"%>
