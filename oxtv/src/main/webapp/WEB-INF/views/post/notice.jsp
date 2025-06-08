@@ -3,6 +3,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://oxtv.com/functions" prefix="fnx"%>
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/common.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/postlist.css">
 
 <html>
 <head>
@@ -13,14 +14,19 @@
 
 	<div class="main-content">
 		<h2>공지사항</h2>
-		<form action="/posts/notice" method="get">
-			<input type="text" name="keyword" placeholder="검색어 입력" value="${param.keyword}" />
-			<button type="submit">검색</button>
-		</form>
+		<div class="top-bar">
+			<form action="/posts/notice" method="get">
+				<input type="text" name="keyword" placeholder="검색어 입력" value="${param.keyword}" />
+				<button type="submit" class="btn">
+					검색 <i class="fi fi-rr-search"></i>
+				</button>
+			</form>
 
-		<c:if test="${isAdmin}">
-			<a href="/posts/new">공지작성</a>
-		</c:if>
+			<c:if test="${isAdmin}">
+				<a href="/posts/new" class="btn"> <i class="fi fi-rr-edit"></i>공지작성
+				</a>
+			</c:if>
+		</div>
 
 
 		<table border="1">
@@ -43,7 +49,7 @@
 							</c:if>
 						</td>
 
-						<td>${post.category}</td>
+						<td class="category ${post.category}">${post.category}</td>
 
 						<!-- 제목 하이라이트 적용 -->
 						<td>
@@ -63,18 +69,27 @@
 			</tbody>
 		</table>
 
-		<c:if test="${isAdmin}">
-			<button id="deleteSelectedBtn">선택 삭제</button>
-		</c:if>
-
-		<c:if test="${postsPage.hasPrevious()}">
-			<a href="/posts/notice?page=${postsPage.number - 1}&keyword=${param.keyword}">이전</a>
-		</c:if>
-		<c:if test="${postsPage.hasNext()}">
-			<a href="/posts/notice?page=${postsPage.number + 1}&keyword=${param.keyword}">다음</a>
-		</c:if>
-
-
+		<div class="bottom-bar">
+			<div class="left-btns">
+				<c:if test="${postsPage.hasPrevious()}">
+					<a href="/posts/notice?page=${postsPage.number - 1}&keyword=${param.keyword}" class="btn">
+						<i class="fi fi-rr-arrow-left"></i> 이전
+					</a>
+				</c:if>
+				<c:if test="${postsPage.hasNext()}">
+					<a href="/posts/notice?page=${postsPage.number + 1}&keyword=${param.keyword}" class="btn">
+						다음 <i class="fi fi-rr-arrow-right"></i>
+					</a>
+				</c:if>
+			</div>
+			<div class="right-btns">
+				<c:if test="${isAdmin}">
+					<button id="deleteSelectedBtn" class="btn">
+						<i class="fi fi-rr-trash-xmark"></i> 선택 삭제
+					</button>
+				</c:if>
+			</div>
+		</div>
 	</div>
 
 

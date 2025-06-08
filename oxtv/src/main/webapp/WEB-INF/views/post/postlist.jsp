@@ -7,24 +7,36 @@
 <head>
 <title>게시글 목록</title>
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/common.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/postlist.css">
 
+<style>
+
+
+</style>
 </head>
 <body>
 	<%@ include file="/WEB-INF/views/common/header.jsp"%>
 	<div class="main-content">
+
 		<h2>게시글 목록</h2>
-		<form action="/posts" method="get">
-			<select name="searchType">
-				<option value="title" ${param.searchType == 'title' ? 'selected' : ''}>제목</option>
-				<option value="nickname" ${param.searchType == 'nickname' ? 'selected' : ''}>작성자</option>
-				<option value="category" ${param.searchType == 'category' ? 'selected' : ''}>카테고리</option>
-			</select>
-			<input type="text" name="keyword" placeholder="검색어 입력" value="${param.keyword}" />
-			<button type="submit">검색</button>
-		</form>
+		<div class="top-bar">
+			<form action="/posts" method="get">
+				<select name="searchType">
+					<option value="title" ${param.searchType == 'title' ? 'selected' : ''}>제목</option>
+					<option value="nickname" ${param.searchType == 'nickname' ? 'selected' : ''}>작성자</option>
+					<option value="category" ${param.searchType == 'category' ? 'selected' : ''}>카테고리</option>
+				</select>
+				<input type="text" name="keyword" placeholder="검색어 입력" value="${param.keyword}" />
+				<button type="submit" class="btn">
+					검색 <i class="fi fi-rr-search"></i>
+				</button>
+			</form>
 
 
-		<a href="/posts/new">게시글 작성</a>
+			<a href="/posts/new" class="btn"> <i class="fi fi-rr-edit"></i>새 글 작성
+			</a>
+		</div>
+
 		<table border="1">
 			<thead>
 				<tr>
@@ -45,7 +57,7 @@
 							</c:if>
 						</td>
 
-						<td>${post.category}</td>
+						<td class="category ${post.category}">${post.category}</td>
 
 						<!-- 제목 하이라이트 적용 -->
 						<td>
@@ -65,23 +77,31 @@
 			</tbody>
 		</table>
 
-		<c:if test="${isAdmin}">
-			<button id="deleteSelectedBtn">선택 삭제</button>
-		</c:if>
-		<c:if test="${loginUser.role == 'ADMIN'}">
-			<a href="${pageContext.request.contextPath}/admin/exportPosts" class="btn btn-primary"> 엑셀 다운로드 </a>
-		</c:if>
-
-		<c:if test="${postsPage.hasPrevious()}">
-			<a href="/posts?page=${postsPage.number - 1}&keyword=${param.keyword}">이전</a>
-		</c:if>
-		<c:if test="${postsPage.hasNext()}">
-			<a href="/posts?page=${postsPage.number + 1}&keyword=${param.keyword}">다음</a>
-		</c:if>
+		<div class="bottom-bar">
+			<div class="left-btns">
+				<c:if test="${postsPage.hasPrevious()}">
+					<a href="/posts?page=${postsPage.number - 1}&keyword=${param.keyword}" class="btn"> <i class="fi fi-rr-arrow-left"></i> 이전
+					</a>
+				</c:if>
+				<c:if test="${postsPage.hasNext()}">
+					<a href="/posts?page=${postsPage.number + 1}&keyword=${param.keyword}" class="btn"> 다음 <i class="fi fi-rr-arrow-right"></i>
+					</a>
+				</c:if>
+			</div>
+			<div class="right-btns">
+				<c:if test="${isAdmin}">
+					<button id="deleteSelectedBtn" class="btn">
+						<i class="fi fi-rr-trash-xmark"></i> 선택 삭제
+					</button>
+				</c:if>
+				<c:if test="${loginUser.role == 'ADMIN'}">
+					<a href="${pageContext.request.contextPath}/admin/exportPosts" class="btn"> <i class="fi fi-rr-file-spreadsheet"></i> 엑셀 다운로드
+					</a>
+				</c:if>
+			</div>
+		</div>
 
 	</div>
-
-
 </body>
 </html>
 

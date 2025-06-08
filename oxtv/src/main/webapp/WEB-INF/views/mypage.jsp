@@ -7,36 +7,57 @@
 <meta charset="UTF-8">
 <title>마이페이지</title>
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/common.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/user.css">
 
 </head>
 <body>
 	<%@ include file="/WEB-INF/views/common/header.jsp"%>
-	<div class="main-content">
-		<h2>마이페이지</h2>
-		<form action="/mypage/update" method="post">
-			<input type="hidden" name="id" value="${user.id}" />
 
-			이메일:
-			<input type="email" name="email" value="${user.email}" />
-			<br /> 닉네임 :
-			<input type="text" name="nickname" value="${user.nickname}" />
-			<br /> 기존 비밀번호:
-			<input type="password" name="currentPassword" required />
-			<br /> 새 비밀번호:
-			<input type="password" name="userPassword" />
-			<br /> 비밀번호 확인:
-			<input type="password" name="passwordConfirm" />
-			<br />
-			<button type="submit">정보 수정</button>
+	<div class="main-content">
+		<div class="user-container">
+			<h2>마이페이지</h2>
+
+			<form action="<c:url value='/mypage/update' />" method="post">
+				<input type="hidden" name="id" value="${user.id}" />
+
+				<div class="form-group">
+					<label for="email">이메일</label>
+					<input type="email" id="email" name="email" value="${user.email}" />
+				</div>
+
+				<div class="form-group">
+					<label for="nickname">닉네임</label>
+					<input type="text" id="nickname" name="nickname" value="${user.nickname}" />
+				</div>
+
+				<hr />
+
+				<div class="form-group">
+					<label for="currentPassword">기존 비밀번호</label>
+					<input type="password" id="currentPassword" name="currentPassword" required />
+				</div>
+
+				<div class="form-group">
+					<label for="userPassword">새 비밀번호</label>
+					<input type="password" id="userPassword" name="userPassword" />
+				</div>
+
+				<div class="form-group">
+					<label for="passwordConfirm">비밀번호 확인</label>
+					<input type="password" id="passwordConfirm" name="passwordConfirm" />
+				</div>
+
+				<button type="submit">정보 수정</button>
+			</form>
 
 			<c:if test="${not empty errorMessage}">
-				<p style="color: red;">${errorMessage}</p>
-			</c:if>
-			<c:if test="${not empty successMessage}">
-				<p style="color: green;">${successMessage}</p>
+				<p class="error-message">${errorMessage}</p>
 			</c:if>
 
-		</form>
+			<c:if test="${not empty successMessage}">
+				<p class="success-message">${successMessage}</p>
+			</c:if>
+		</div>
 	</div>
 
 

@@ -38,7 +38,6 @@
 		<div id="tutorial-container"></div>
 
 		<script>
-	console.log("🔥 tutorials.js loaded");
 
 	// 유튜브 영상 ID 추출
 	function extractVideoId(url) {
@@ -132,6 +131,8 @@
 
 	            container.appendChild(categoryTitle);
 	            container.appendChild(list);
+	            
+	            
 	        });
 	    })
 	    .catch(err => {

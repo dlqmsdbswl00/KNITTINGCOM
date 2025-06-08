@@ -7,23 +7,71 @@
 <meta charset="UTF-8">
 <title>OXTV 커뮤니티</title>
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/common.css">
+<style>
+.intro-split {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 24px;
+	margin-top: 10px;
+}
 
+.intro-image {
+	flex: 0 0 20%;
+}
+
+.intro-image img {
+	width: 100%;
+	height: auto;
+	display: block;
+	border-radius: 12px;
+}
+
+.intro-features {
+	/*	flex: 0 0 80%;*/
+	flex: 1;
+}
+</style>
 
 </head>
 <body>
 	<%@ include file="/WEB-INF/views/common/header.jsp"%>
+
 	<div class="main-content">
-		<h1>뜨개 OXTV 커뮤니티에 오신 것을 환영합니다</h1>
-		<p>여기가 니가 만들 세상의 시작이다.</p>
+
+		<section class="welcome">
+			<h1>🧶 OXTV 뜨개 커뮤니티에 오신 걸 환영합니다!</h1>
+			<p>뜨개를 좋아하는 사람들의 아늑한 공간, 지금 함께 소통하세요.</p>
+		</section>
 
 		<hr />
 
-		<!-- 게시판 목록 보기 링크 추가 -->
-		<form action="/posts" method="get">
-			<button type="submit">게시판 가기</button>
-		</form>
+		<section class="intro-split">
+			<div class="intro-image">
+				<img src="${pageContext.request.contextPath}/img/knitting.png" alt="뜨개 이미지" />
+			</div>
+			<div class="intro-features">
+				<h2>📌 무엇을 할 수 있나요?</h2>
+				<ul>
+					<li>💬 자유롭게 수다 떠는 <strong>자유 게시판</strong></li>
+					<li>🧵 나만의 작품 공유하는 <strong>도안 게시판</strong></li>
+					<li>❓ 궁금한 건 다 물어보는 <strong>질문 게시판</strong></li>
+					<li>📣 최신 소식을 알려주는 <strong>공지사항</strong></li>
+					<li>🎥 유튜브와 함께 배우는 <strong>뜨개 튜토리얼</strong></li>
+				</ul>
+				<hr />
+				<h2>지금 바로 시작해보세요!</h2>
+				<form action="/posts" method="get">
+					<button type="submit">👉 게시판 구경하러 가기</button>
+				</form>
+			</div>
+
+
+		</section>
+
+
+
 	</div>
-
-
 </body>
+
 </html>
