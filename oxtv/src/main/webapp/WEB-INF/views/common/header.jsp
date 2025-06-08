@@ -1,20 +1,9 @@
 <%@ page language="java" pageEncoding="UTF-8"%>
-
+<link rel='stylesheet' href='https://cdn-uicons.flaticon.com/3.0.0/uicons-regular-rounded/css/uicons-regular-rounded.css'>
 <header>
 	<nav id="main-nav">
 		<c:set var="loginUser" value="${sessionScope.loginUser}" />
-		<a href="/">OXTV
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		</a> <a href="/posts">게시판</a> <a href="/posts/notice">공지사항</a> <a href="/tutorials">튜토리얼</a>
+		<a href="/">OXTV </a> <a href="/posts">게시판</a> <a href="/posts/notice">공지사항</a> <a href="/tutorials">튜토리얼</a>
 
 		<c:choose>
 			<c:when test="${not empty loginUser}">

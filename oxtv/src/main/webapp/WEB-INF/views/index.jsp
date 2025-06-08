@@ -7,8 +7,31 @@
 <meta charset="UTF-8">
 <title>OXTV 커뮤니티</title>
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/common.css">
-<link rel="stylesheet" href="${pageContext.request.contextPath}/css/index.css">
+<style>
+.intro-split {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 24px;
+	margin-top: 10px;
+}
 
+.intro-image {
+	flex: 0 0 20%;
+}
+
+.intro-image img {
+	width: 100%;
+	height: auto;
+	display: block;
+	border-radius: 12px;
+}
+
+.intro-features {
+	/*	flex: 0 0 80%;*/
+	flex: 1;
+}
+</style>
 
 </head>
 <body>
