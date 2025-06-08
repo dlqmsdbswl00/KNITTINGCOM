@@ -3,11 +3,22 @@
 <header>
 	<nav id="main-nav">
 		<c:set var="loginUser" value="${sessionScope.loginUser}" />
-		<a href="/">홈</a> <a href="/posts">게시판</a> <a href="/posts/notice">공지사항</a> <a href="/tutorials">튜토리얼</a>
+		<a href="/">OXTV
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		</a> <a href="/posts">게시판</a> <a href="/posts/notice">공지사항</a> <a href="/tutorials">튜토리얼</a>
 
 		<c:choose>
 			<c:when test="${not empty loginUser}">
-				<span>${loginUser.nickname} 님 환영합니다!</span>
+				<span>${loginUser.nickname} 님</span>
 				<a href="/mypage">마이페이지</a>
 				<a href="/logout">로그아웃</a>
 			</c:when>
