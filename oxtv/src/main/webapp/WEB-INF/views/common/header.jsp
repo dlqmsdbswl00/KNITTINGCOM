@@ -16,7 +16,5 @@
 				<a href="/login">로그인</a>
 			</c:otherwise>
 		</c:choose>
-
-		<p>디버깅용: ${loginUser}</p>
 	</nav>
 </header>
