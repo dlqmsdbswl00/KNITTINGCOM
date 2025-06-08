@@ -4,44 +4,48 @@
 <html>
 <head>
 <title>게시글 작성</title>
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/common.css">
+
 </head>
 <body>
 	<%@ include file="/WEB-INF/views/common/header.jsp"%>
+	<div class="main-content">
+		<h2>게시글 작성</h2>
 
-	<h2>게시글 작성</h2>
+		<p>DEBUG: role name = [${roleName}]</p>
 
-	<p>DEBUG: role name = [${roleName}]</p>
-
-	<form method="post" enctype="multipart/form-data" action="/posts/new">
-
-
-		<br>카테고리:
-		<select name="category" required>
-
-			<c:choose>
-				<c:when test="${isAdmin}">
-					<option value="공지">공지</option>
-				</c:when>
-				<c:otherwise>
-					<option value="도안">도안</option>
-					<option value="자유">자유</option>
-					<option value="질문">질문</option>
-				</c:otherwise>
-			</c:choose>
-		</select>
-		<br> 제목:
-		<input type="text" name="title" required>
-		<br> 내용:<br>
-		<textarea name="content" rows="10" cols="50" required></textarea>
-		<br> 파일첨부:
-		<input type="file" name="files" multiple>
-		<br>
+		<form method="post" enctype="multipart/form-data" action="/posts/new">
 
 
+			<br>카테고리:
+			<select name="category" required>
+
+				<c:choose>
+					<c:when test="${isAdmin}">
+						<option value="공지">공지</option>
+					</c:when>
+					<c:otherwise>
+						<option value="도안">도안</option>
+						<option value="자유">자유</option>
+						<option value="질문">질문</option>
+					</c:otherwise>
+				</c:choose>
+			</select>
+			<br> 제목:
+			<input type="text" name="title" required>
+			<br> 내용:<br>
+			<textarea name="content" rows="10" cols="50" required></textarea>
+			<br> 파일첨부:
+			<input type="file" name="files" multiple>
+			<br>
 
 
-		<button type="submit">등록</button>
-	</form>
+
+
+			<button type="submit">등록</button>
+		</form>
+
+	</div>
 
 </body>
 </html>

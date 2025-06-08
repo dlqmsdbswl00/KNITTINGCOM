@@ -6,77 +6,80 @@
 <html>
 <head>
 <title>게시글 목록</title>
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/common.css">
+
 </head>
 <body>
 	<%@ include file="/WEB-INF/views/common/header.jsp"%>
+	<div class="main-content">
+		<h2>게시글 목록</h2>
+		<form action="/posts" method="get">
+			<select name="searchType">
+				<option value="title" ${param.searchType == 'title' ? 'selected' : ''}>제목</option>
+				<option value="nickname" ${param.searchType == 'nickname' ? 'selected' : ''}>작성자</option>
+				<option value="category" ${param.searchType == 'category' ? 'selected' : ''}>카테고리</option>
+			</select>
+			<input type="text" name="keyword" placeholder="검색어 입력" value="${param.keyword}" />
+			<button type="submit">검색</button>
+		</form>
 
-	<h2>게시글 목록</h2>
-	<form action="/posts" method="get">
-		<select name="searchType">
-			<option value="title" ${param.searchType == 'title' ? 'selected' : ''}>제목</option>
-			<option value="nickname" ${param.searchType == 'nickname' ? 'selected' : ''}>작성자</option>
-			<option value="category" ${param.searchType == 'category' ? 'selected' : ''}>카테고리</option>
-		</select>
-		<input type="text" name="keyword" placeholder="검색어 입력" value="${param.keyword}" />
-		<button type="submit">검색</button>
-	</form>
 
-
-	<a href="/posts/new">게시글 작성</a>
-	<table border="1">
-		<thead>
-			<tr>
-				<th></th>
-				<th>카테고리</th>
-				<th>제목</th>
-				<th>작성자</th>
-				<th>작성일</th>
-			</tr>
-		</thead>
-		<tbody>
-			<c:forEach var="post" items="${postsPage.content}">
+		<a href="/posts/new">게시글 작성</a>
+		<table border="1">
+			<thead>
 				<tr>
-					<td>
-						<!-- 관리자면 체크박스 보이도록 -->
-						<c:if test="${isAdmin}">
-							<input type="checkbox" name="postIds" value="${post.id}">
-						</c:if>
-					</td>
-
-					<td>${post.category}</td>
-
-					<!-- 제목 하이라이트 적용 -->
-					<td>
-						<a href="/posts/${post.id}">
-							<c:out value="${fnx:highlight(post.title, param.keyword)}" escapeXml="false" />
-						</a>
-					</td>
-
-					<!-- 작성자 하이라이트 적용 -->
-					<td>
-						<c:out value="${fnx:highlight(post.user.nickname, param.keyword)}" escapeXml="false" />
-					</td>
-
-					<!-- 작성일은 하이라이트 필요 없음 -->
-					<td>${post.formattedCreatedAt}</td>
+					<th></th>
+					<th>카테고리</th>
+					<th>제목</th>
+					<th>작성자</th>
+					<th>작성일</th>
 				</tr>
-			</c:forEach>
-		</tbody>
-	</table>
+			</thead>
+			<tbody>
+				<c:forEach var="post" items="${postsPage.content}">
+					<tr>
+						<td>
+							<!-- 관리자면 체크박스 보이도록 -->
+							<c:if test="${isAdmin}">
+								<input type="checkbox" name="postIds" value="${post.id}">
+							</c:if>
+						</td>
 
-	<c:if test="${isAdmin}">
-		<button id="deleteSelectedBtn">선택 삭제</button>
-	</c:if>
-	<c:if test="${loginUser.role == 'ADMIN'}">
-		<a href="${pageContext.request.contextPath}/admin/exportPosts" class="btn btn-primary"> 엑셀 다운로드 </a>
-	</c:if>
+						<td>${post.category}</td>
 
-	<c:if test="${postsPage.hasPrevious()}">
-		<a href="/posts?page=${postsPage.number - 1}&keyword=${param.keyword}">이전</a>
-	</c:if>
-	<c:if test="${postsPage.hasNext()}">
-		<a href="/posts?page=${postsPage.number + 1}&keyword=${param.keyword}">다음</a>
-	</c:if>
+						<!-- 제목 하이라이트 적용 -->
+						<td>
+							<a href="/posts/${post.id}"> <c:out value="${fnx:highlight(post.title, param.keyword)}" escapeXml="false" />
+							</a>
+						</td>
+
+						<!-- 작성자 하이라이트 적용 -->
+						<td>
+							<c:out value="${fnx:highlight(post.user.nickname, param.keyword)}" escapeXml="false" />
+						</td>
+
+						<!-- 작성일은 하이라이트 필요 없음 -->
+						<td>${post.formattedCreatedAt}</td>
+					</tr>
+				</c:forEach>
+			</tbody>
+		</table>
+
+		<c:if test="${isAdmin}">
+			<button id="deleteSelectedBtn">선택 삭제</button>
+		</c:if>
+		<c:if test="${loginUser.role == 'ADMIN'}">
+			<a href="${pageContext.request.contextPath}/admin/exportPosts" class="btn btn-primary"> 엑셀 다운로드 </a>
+		</c:if>
+
+		<c:if test="${postsPage.hasPrevious()}">
+			<a href="/posts?page=${postsPage.number - 1}&keyword=${param.keyword}">이전</a>
+		</c:if>
+		<c:if test="${postsPage.hasNext()}">
+			<a href="/posts?page=${postsPage.number + 1}&keyword=${param.keyword}">다음</a>
+		</c:if>
+
+	</div>
 
 
 </body>

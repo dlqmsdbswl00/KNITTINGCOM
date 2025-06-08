@@ -6,7 +6,7 @@
 <head>
 <meta charset="UTF-8">
 <title>뜨개질 튜토리얼</title>
-
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/common.css">
 <style>
 .tutorial-list {
 	list-style-type: none;
@@ -32,11 +32,12 @@
 </head>
 <body>
 	<%@ include file="/WEB-INF/views/common/header.jsp"%>
-	<h2>뜨개질 튜토리얼 🎥</h2>
-	<p>사진을 클릭하면 해당 튜토리얼 영상으로 이동합니다</p>
-	<div id="tutorial-container"></div>
+	<div class="main-content">
+		<h2>뜨개질 튜토리얼 🎥</h2>
+		<p>사진을 클릭하면 해당 튜토리얼 영상으로 이동합니다</p>
+		<div id="tutorial-container"></div>
 
-	<script>
+		<script>
 	console.log("🔥 tutorials.js loaded");
 
 	// 유튜브 영상 ID 추출
@@ -139,5 +140,7 @@
 	    });
 	});
 	</script>
+	</div>
+
 </body>
 </html>

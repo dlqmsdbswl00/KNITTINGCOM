@@ -1,0 +1,182 @@
+@charset "UTF-8";
+
+/* ===== 공통 색상 변수 ===== */
+:root {
+	--color-bg: #F2F2F2;
+	--color-sub-bg: #EAE4D5;
+	--color-accent: #B6B09F;
+	--color-text: #000000;
+}
+
+/* ===== 폰트 등록 ===== */
+@font-face {
+	font-family: 'CookieRun-Regular';
+	src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/CookieRun-Regular.woff') format('woff');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'omyu_pretty';
+	src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-01@1.0/omyu_pretty.woff2') format('woff2');
+	font-weight: normal;
+	font-style: normal;
+}
+
+/* ===== 전체 기본 세팅 ===== */
+html {
+	box-sizing: border-box;
+}
+
+*,
+*::before,
+*::after {
+	box-sizing: inherit;
+}
+
+body {
+	margin: 0;
+	padding: 0;
+	background-color: var(--color-bg);
+	font-family: 'omyu_pretty', sans-serif;
+	color: var(--color-text);
+}
+
+.main-content {
+	padding: 24px;
+}
+
+/* 제목 공통 스타일 */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	font-family: 'CookieRun-Regular', sans-serif;
+	color: var(--color-text);
+	margin-top: 0;
+}
+
+/* 버튼 공통 스타일 */
+button {
+	font-family: inherit;
+	cursor: pointer;
+	border: none;
+	background-color: var(--color-accent);
+	color: #fff;
+	padding: 8px 16px;
+	border-radius: 8px;
+	transition: background-color 0.3s;
+}
+
+button:hover {
+	background-color: #99927d;
+}
+
+/* 입력 요소 공통 스타일 */
+input,
+textarea,
+select {
+	font-family: inherit;
+	padding: 8px;
+	border: 1px solid #ccc;
+	border-radius: 6px;
+}
+
+
+/*헤더/네비게이션 스타일*/
+header {
+	background-color: var(--color-sub-bg);
+	padding: 16px 24px;
+	font-family: 'CookieRun-Regular', sans-serif;
+	font-size: 18px;
+	border-bottom: 2px solid var(--color-accent);
+}
+
+header a {
+	text-decoration: none;
+}
+
+
+#main-nav {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	flex-wrap: wrap;
+	gap: 12px;
+}
+
+#main-nav a {
+	color: var(--color-text);
+	margin-right: 12px;
+	font-weight: bold;
+	transition: color 0.3s;
+}
+
+#main-nav a:hover {
+	color: var(--color-accent);
+}
+
+
+
+
+
+/* ===== 테이블 공통 스타일 ===== */
+table {
+	width: 100%;
+	border-collapse: collapse;
+	margin-top: 24px;
+	font-size: 16px;
+	background-color: #fff;
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+	border-radius: 12px;
+	overflow: hidden;
+}
+
+table a {
+	text-decoration: none;
+	font-weight: bold;
+	color: #333;
+}
+
+table a:hover {
+	color: var(--color-accent);
+	/* hover 시 포인트 색상 */
+}
+
+th,
+td {
+	padding: 12px 16px;
+	text-align: left;
+	border-bottom: 1px solid #ddd;
+}
+
+thead th {
+	text-align: center;
+	vertical-align: middle;
+}
+
+thead {
+	background-color: var(--color-sub-bg);
+	font-family: 'CookieRun-Regular', sans-serif;
+}
+
+tbody tr:hover {
+	background-color: #f7f7f7;
+	transition: background-color 0.2s ease-in-out;
+}
+
+th:first-child,
+td:first-child {
+	text-align: center;
+	width: 40px;
+}
+
+/* 카테고리 열 */
+td:nth-child(2) {
+	width: 100px;
+	text-align: center;
+	font-weight: bold;
+	color: #7a6240;
+}

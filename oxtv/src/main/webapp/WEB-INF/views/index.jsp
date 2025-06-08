@@ -6,20 +6,24 @@
 <head>
 <meta charset="UTF-8">
 <title>OXTV 커뮤니티</title>
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/common.css">
+
+
 </head>
 <body>
 	<%@ include file="/WEB-INF/views/common/header.jsp"%>
+	<div class="main-content">
+		<h1>뜨개 OXTV 커뮤니티에 오신 것을 환영합니다</h1>
+		<p>여기가 니가 만들 세상의 시작이다.</p>
 
+		<hr />
 
-	<h1>뜨개 OXTV 커뮤니티에 오신 것을 환영합니다</h1>
-	<p>여기가 니가 만들 세상의 시작이다.</p>
+		<!-- 게시판 목록 보기 링크 추가 -->
+		<form action="/posts" method="get">
+			<button type="submit">게시판 가기</button>
+		</form>
+	</div>
 
-	<hr />
-
-	<!-- 게시판 목록 보기 링크 추가 -->
-	<form action="/posts" method="get">
-		<button type="submit">게시판 가기</button>
-	</form>
 
 </body>
 </html>
