@@ -7,32 +7,40 @@
 <head>
 <title>게시글 보기</title>
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/common.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/post.css">
 
 </head>
 <body>
 	<%@ include file="/WEB-INF/views/common/header.jsp"%>
 	<div class="main-content">
-		<h2>${post.category}</h2>
-		<h2>${post.title}</h2>
+
+		<div class="title-row">
+			<h2 class="category ${post.category}">${post.category}</h2>
+			<h2 class="post-title">${post.title}</h2>
+		</div>
+
+
 
 		<c:if test="${not empty fileList}">
-			<h4>첨부파일</h4>
-			<ul>
-				<c:forEach var="file" items="${fileList}">
-					<li><a href="/file/download?fileId=${file.id}" download>${file.originalName}</a></li>
-				</c:forEach>
-			</ul>
-		</c:if>
+  <div class="attachments">
+    <h4>첨부파일</h4>
+    <ul>
+      <c:forEach var="file" items="${fileList}">
+        <li><a href="/file/download?fileId=${file.id}" download>${file.originalName}</a></li>
+      </c:forEach>
+    </ul>
+  </div>
+</c:if>
 
 		<p>
-			<strong>작성자:</strong> ${post.user.nickname}
+			<strong>작성자 :</strong> ${post.user.nickname} &nbsp;&nbsp;&nbsp;&nbsp; <strong>작성일 :</strong> ${formattedCreatedAt}
 		</p>
-		<p>
-			<strong>작성일:</strong> ${formattedCreatedAt}
-		</p>
+		<hr>
+
 		<c:if test="${post.updatedAt != null && post.updatedAt ne post.createdAt}">
 			<small style="color: gray;">(수정됨)</small>
 		</c:if>
+
 		<p>${post.content}</p>
 
 		<c:forEach var="file" items="${fileList}">
@@ -45,15 +53,18 @@
 		</c:forEach>
 
 		<hr>
-		<c:if test="${not empty sessionScope.loginUser and post.user.userId eq sessionScope.loginUser.userId}">
-			<a href="/posts/${post.id}/edit">수정</a>
-		</c:if>
+		<div class="post-buttons">
+			<c:if test="${not empty sessionScope.loginUser and post.user.userId eq sessionScope.loginUser.userId}">
+				<form action="/posts/${post.id}/edit" method="get">
+					<button type="submit">수정</button>
+				</form>
+			</c:if>
+			<form action="/posts" method="get">
+				<button type="submit">목록</button>
+			</form>
+		</div>
 
 
-
-		<a href="/posts">목록</a>
-		<hr>
-		<hr>
 
 		<c:if test="${post.category != '공지'}">
 			<h3>댓글 목록</h3>
@@ -67,6 +78,7 @@
 						</c:if>
 
 						<p class="comment-content">${comment.content}</p>
+						
 						<c:if test="${sessionScope.loginUser != null && sessionScope.loginUser.id == comment.user.id}">
 							<button class="edit-btn">수정</button>
 							<button class="delete-btn">삭제</button>
@@ -77,7 +89,6 @@
 							<button class="cancel-edit">취소</button>
 						</div>
 					</div>
-					<hr>
 				</c:forEach>
 			</div>
 
@@ -86,7 +97,6 @@
 			<form id="commentForm">
 				<input type="hidden" id="postId" value="${post.id}" />
 				<textarea id="commentContent" required></textarea>
-				<br>
 				<button type="submit">작성</button>
 			</form>
 		</c:if>

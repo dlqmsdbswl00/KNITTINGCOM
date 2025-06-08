@@ -63,17 +63,3 @@ a.btn:hover, button.btn:hover {
 	gap: 8px;
 	align-items: center;
 }
-
-.category.자유 {
-    color: #4a90e2;  /* 연한 파랑 */
-}
-.category.도안 {
-    color: #388e3c;  /* 짙은 초록 */
-}
-.category.질문 {
-    color: #f57c00;  /* 부드러운 주황 */
-}
-.category.공지 {
-    color: #c62828;  /* 톤 다운된 붉은 */
-    font-weight: bold;
-}

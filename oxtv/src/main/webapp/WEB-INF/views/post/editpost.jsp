@@ -67,6 +67,9 @@
 
 			<!-- 새 파일 업로드 -->
 			<div class="form-group row-inline file-submit-group">
+				
+				
+				
 				<label for="files">새 파일첨부:</label> <label for="files" class="file-btn btn"> <i class="fi fi-rr-folder"></i> 파일 선택
 				</label>
 				<input type="file" name="files" id="files" multiple class="file-input">
@@ -87,7 +90,7 @@
 
 			<script>
     document.getElementById("files").addEventListener("change", function () {
-        const names = Array.from(this.files).map(f => f.name).join(', ');
+        const names = Array.from(this.files).map(f => f.name).join('\n');
         document.getElementById("file-names").textContent = names || "선택된 파일 없음";
     });
 </script>
