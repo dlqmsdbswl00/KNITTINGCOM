@@ -260,7 +260,7 @@ public class PostController {
 	                              @RequestParam(defaultValue = "0") int page,
 	                              Model model, HttpSession session) {
 
-	    Pageable pageable = PageRequest.of(page, 10, Sort.by("createdAt").descending());
+	    Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
 	    Page<Post> postsPage;
 
 	    if (keyword == null || keyword.trim().isEmpty()) {
